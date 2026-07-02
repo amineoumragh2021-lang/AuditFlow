@@ -1,0 +1,79 @@
+@startuml
+
+' Diagramme de Séquence - Version par Rôle
+
+actor "Responsable" as Resp
+actor "Auditeur" as Aud
+actor "Client" as Cli
+participant "Application Django" as App
+database "Base de Données" as DB
+
+note over Resp,DB : Cycle de vie d'un audit
+
+== Phase 1: Planification (Responsable) ==
+
+Resp -> App : Crée un audit
+App -> DB : Enregistre audit (titre, type, date)
+DB --> App : Audit créé
+App -> DB : Affecte client et auditeur
+DB --> App : Affectation OK
+App --> Resp : Audit planifié
+
+== Phase 2: Consultation (Auditeur et Client) ==
+
+Aud -> App : Consulte ses audits assignés
+App -> DB : Récupère audits de l'auditeur
+DB --> App : Liste des audits
+App --> Aud : Affiche ses audits
+
+Cli -> App : Consulte ses audits
+App -> DB : Récupère audits du client
+DB --> App : Liste des audits
+App --> Cli : Affiche ses audits
+
+== Phase 3: Rédaction du rapport (Auditeur) ==
+
+Aud -> App : Demande à rédiger rapport
+App -> DB : Vérifie date de l'audit
+DB --> App : Date passée ✓
+App -> DB : Vérifie si rapport existe
+DB --> App : Aucun rapport ✓
+App -> DB : Charge checklist du type d'audit
+DB --> App : Items de checklist
+App --> Aud : Formulaire avec checklist
+Aud -> App : Soumet rapport + réponses
+App -> DB : Enregistre rapport
+App -> DB : Enregistre réponses checklist
+DB --> App : Rapport créé
+App --> Aud : Rapport enregistré
+
+== Phase 4: Modification (Auditeur) ==
+
+Aud -> App : Modifie son rapport
+App -> DB : Vérifie autorisation (auteur)
+DB --> App : Autorisé ✓
+App -> DB : Met à jour contenu
+App -> DB : Met à jour réponses checklist
+DB --> App : Modifications OK
+App --> Aud : Rapport mis à jour
+
+== Phase 5: Consultation du rapport (Client) ==
+
+Cli -> App : Consulte les rapports
+App -> DB : Récupère rapports de ses audits
+DB --> App : Liste des rapports
+App --> Cli : Affiche rapports
+Cli -> App : Ouvre un rapport
+App -> DB : Récupère rapport + checklist
+DB --> App : Détails complets
+App --> Cli : Affiche rapport avec score
+
+== Phase 6: Export PDF (Tous les rôles) ==
+
+Cli -> App : Demande PDF du rapport
+App -> DB : Récupère toutes les données
+DB --> App : Données complètes
+App -> App : Génère PDF (ReportLab)
+App --> Cli : Fichier PDF téléchargé
+
+@enduml

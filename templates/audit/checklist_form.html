@@ -1,0 +1,50 @@
+{% extends 'audit/base.html' %}
+{% block title %}Ajouter checklist{% endblock %}
+{% block page_title %}Ajouter des points de checklist{% endblock %}
+{% block content %}
+<div class="toolbar">
+    <div>
+        <span class="section-label">Checklists</span>
+        <h2>Nouveaux points de contrôle</h2>
+        <p>Choisissez le type d’audit puis ajoutez un ou plusieurs points de contrôle.</p>
+    </div>
+</div>
+
+<div class="form-card reveal-card">
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        <div>
+            <label>Type d’audit</label>
+            <select name="type_audit" required>
+                {% for value, label in types_audit %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <div class="mb-4 flex items-center justify-between gap-3">
+                <div><span class="section-label">Points</span><h3 class="mt-1 text-xl font-black">Liste des contrôles</h3></div>
+                <button type="button" class="btn-secondary" data-add-point>Ajouter une ligne</button>
+            </div>
+            <div class="space-y-3" data-points-wrap>
+                <div class="grid items-start gap-3 md:grid-cols-[90px_1fr_auto]" data-point-row>
+                    <div class="order-badge">1</div>
+                    <input type="text" name="texte[]" placeholder="Exemple : Les procédures sont-elles respectées ?" required>
+                    <button type="button" class="btn-secondary" data-remove-point>Retirer</button>
+                </div>
+                <div class="grid items-start gap-3 md:grid-cols-[90px_1fr_auto]" data-point-row>
+                    <div class="order-badge">2</div>
+                    <input type="text" name="texte[]" placeholder="Exemple : Les documents sont-ils à jour ?">
+                    <button type="button" class="btn-secondary" data-remove-point>Retirer</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sticky-actions">
+            <button type="submit" class="btn-primary">Enregistrer les points</button>
+            <a href="{% url 'checklist_list' %}" class="btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

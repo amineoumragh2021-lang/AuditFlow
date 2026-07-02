@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - AuditFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'audit/css/style.css' %}">
+</head>
+<body class="auth-bg min-h-screen text-slate-900">
+    <div class="absolute inset-0 grid-pattern opacity-50"></div>
+    <div class="relative grid min-h-screen place-items-center p-4 sm:p-8">
+        <div class="auth-card grid lg:grid-cols-[1.04fr_.96fr] fade-up">
+            <section class="relative hidden min-h-[670px] overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between">
+                <div class="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-blue-500/30 blur-3xl floaty"></div>
+                <div class="absolute bottom-16 left-12 h-52 w-52 rounded-full bg-cyan-400/20 blur-3xl floaty"></div>
+                <div class="relative z-10 flex items-center gap-4">
+                    <div class="brand-logo">AF</div>
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight">AuditFlow</h1>
+                        <p class="text-xs font-black uppercase tracking-[.22em] text-blue-200">Django + MySQL + Tailwind</p>
+                    </div>
+                </div>
+                <div class="relative z-10">
+                    <span class="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[.22em] text-blue-100">Projet PFA</span>
+                    <h2 class="mt-7 max-w-xl text-6xl font-black leading-[.92] tracking-[-.06em]">Plateforme moderne de gestion des audits industriels</h2>
+                    <p class="mt-6 max-w-xl text-lg leading-8 text-slate-300">Planification, checklists, rapports et suivi des audits avec une interface claire, professionnelle et responsive.</p>
+                    <div class="mt-9 grid grid-cols-3 gap-4">
+                        <div class="feature-pill"><span class="feature-dot"></span><div><strong class="block text-2xl text-white">180</strong><small>Checklist</small></div></div>
+                        <div class="feature-pill"><span class="feature-dot"></span><div><strong class="block text-2xl text-white">3</strong><small>Rôles</small></div></div>
+                        <div class="feature-pill"><span class="feature-dot"></span><div><strong class="block text-2xl text-white">4</strong><small>Types</small></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="auth-panel">
+                <div class="mx-auto max-w-md">
+                    <div class="auth-logo mb-7">AF</div>
+                    <p class="eyebrow">Bienvenue</p>
+                    <h2 class="auth-title mt-2">Connexion</h2>
+                    <p class="muted mt-4">Connectez-vous à votre espace Responsable Audit, Auditeur ou Client.</p>
+
+                    {% if messages %}
+                        <div class="mt-5 space-y-2">
+                        {% for message in messages %}
+                            <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 font-bold text-red-700">{{ message }}</div>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <form method="post" class="tw-form mt-8 space-y-5">
+                        {% csrf_token %}
+                        <div>
+                            <label>Email</label>
+                            <input type="email" name="email" placeholder="exemple@audit.com" required>
+                        </div>
+                        <div>
+                            <label>Mot de passe</label>
+                            <input type="password" name="password" placeholder="Votre mot de passe" required>
+                        </div>
+                        <button type="submit" class="btn-primary w-full">Se connecter</button>
+                    </form>
+
+                    <div class="mt-6 rounded-[22px] border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-600">
+                        Nouveau compte ? <a href="{% url 'register' %}" class="font-black text-blue-700">Créer un compte</a>
+                    </div>
+                    <div class="mt-5 rounded-[22px] border border-blue-100 bg-blue-50/70 p-5 text-sm leading-7 text-slate-600">
+                        <strong class="block text-slate-950">Comptes de test</strong>
+                        responsable@audit.com / 123456<br>auditeur@audit.com / 123456<br>client@audit.com / 123456
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script src="{% static 'audit/js/app.js' %}"></script>
+</body>
+</html>

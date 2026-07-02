@@ -1,0 +1,94 @@
+@startuml
+
+' Diagramme de Flux - Workflow de l'Application
+
+start
+:Connexion?;
+if (Non?) then (Oui)
+  :Page de connexion;
+  :Vérifier identifiants;
+endif
+
+:Vérifier rôle;
+
+if (Responsable?) then (Oui)
+  :Dashboard Responsable;
+  :Actions Responsable?;
+  
+  if (Gérer utilisateurs?) then (Oui)
+    :Liste utilisateurs;
+  elseif (Créer audit?) then (Oui)
+    :Remplir formulaire;
+    :Enregistrer audit;
+    :Liste audits;
+  elseif (Modifier audit?) then (Oui)
+    :Modifier audit;
+  elseif (Gérer checklist?) then (Oui)
+    :Gérer checklist;
+  elseif (Voir audits?) then (Oui)
+    :Liste audits;
+  elseif (Voir rapports?) then (Oui)
+    :Liste rapports;
+  elseif (Calendrier?) then (Oui)
+    :Calendrier;
+  endif
+  
+elseif (Auditeur?) then (Oui)
+  :Dashboard Auditeur;
+  :Actions Auditeur?;
+  
+  if (Voir mes audits?) then (Oui)
+    :Mes audits;
+  elseif (Créer rapport?) then (Oui)
+    :Sélectionner audit;
+    if (Date passée?) then (Non)
+      :Erreur: date future;
+    else (Oui)
+      if (Rapport existe?) then (Oui)
+        :Voir rapport existant;
+      else (Non)
+        :Remplir checklist;
+        :Enregistrer rapport;
+        :Mes rapports;
+      endif
+    endif
+  elseif (Modifier rapport?) then (Oui)
+    :Détail rapport;
+    :Modifier contenu;
+    :Modifier checklist;
+    :Enregistrer modifications;
+    :Détail rapport;
+  elseif (Voir rapports?) then (Oui)
+    :Mes rapports;
+  elseif (Calendrier?) then (Oui)
+    :Calendrier;
+  endif
+  
+elseif (Client?) then (Oui)
+  :Dashboard Client;
+  :Actions Client?;
+  
+  if (Voir mes audits?) then (Oui)
+    :Mes audits;
+  elseif (Voir rapports?) then (Oui)
+    :Rapports;
+  elseif (Calendrier?) then (Oui)
+    :Calendrier;
+  endif
+endif
+
+:Détail rapport;
+if (Exporter PDF?) then (Oui)
+  :Générer PDF;
+  :Télécharger PDF;
+endif
+
+:Déconnexion?;
+if (Oui) then (Oui)
+  :Page de connexion;
+  stop
+else (Non)
+  stop
+endif
+
+@enduml

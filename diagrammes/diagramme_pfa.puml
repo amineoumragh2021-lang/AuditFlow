@@ -1,0 +1,54 @@
+@startuml
+
+' Diagramme pour Présentation PFA - AuditFlow
+
+actor "Responsable" as R
+actor "Auditeur" as A
+actor "Client" as C
+
+package "Application Django" {
+  component "Authentification" as Auth
+  component "Dashboard" as Dash
+  component "Gestion Audits" as AuditM
+  component "Gestion Rapports" as RapportM
+  component "Checklist" as Check
+  component "Calendrier" as Cal
+}
+
+database "SQLite" as DB
+
+R --> Auth
+A --> Auth
+C --> Auth
+
+Auth --> Dash
+Dash --> AuditM
+Dash --> RapportM
+Dash --> Check
+Dash --> Cal
+
+AuditM --> DB
+RapportM --> DB
+Check --> DB
+
+note right of R
+  Planifie les audits
+  Gère les utilisateurs
+end note
+
+note right of A
+  Réalise les audits
+  Rédige les rapports
+end note
+
+note right of C
+  Consulte les audits
+  Télécharge les rapports
+end note
+
+note bottom of DB
+  Base de données
+  SQLite
+end note
+
+@enduml

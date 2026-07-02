@@ -1,0 +1,267 @@
+{% extends 'audit/base.html' %}
+
+{% block title %}Détail du rapport{% endblock %}
+{% block page_title %}Détail du rapport{% endblock %}
+
+{% block content %}
+
+<div class="max-w-6xl mx-auto">
+
+    <div class="rounded-[28px] bg-white/90 shadow-2xl border border-slate-200 overflow-hidden">
+
+        <div class="bg-gradient-to-r from-emerald-600 to-blue-600 px-8 py-6">
+            <h2 class="text-3xl font-black text-white">
+                Rapport N° {{ rapport.id }}
+            </h2>
+        </div>
+
+        <div class="p-8 space-y-8">
+
+            <!-- Résumé -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div class="rounded-2xl bg-slate-50 p-6">
+                    <h3 class="font-bold text-lg mb-3">
+                        Résumé
+                    </h3>
+
+                    <p class="text-slate-600">
+                        {{ rapport.resume|default:"Aucun résumé disponible." }}
+                    </p>
+                </div>
+
+                <div class="rounded-2xl bg-slate-50 p-6">
+                    <h3 class="font-bold text-lg mb-3">
+                        Recommandations
+                    </h3>
+
+                    <p class="text-slate-600">
+                        {{ rapport.recommandations|default:"Aucune recommandation disponible." }}
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Informations -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+
+                <div class="rounded-2xl bg-emerald-100 p-5 text-center">
+                    <p class="text-sm text-slate-500">
+                        Score
+                    </p>
+
+                    <p class="text-4xl font-black text-emerald-700">
+                        {{ score }}%
+                    </p>
+                </div>
+
+                <div class="rounded-2xl bg-blue-100 p-5">
+                    <p class="text-sm text-slate-500">
+                        Audit
+                    </p>
+
+                    <p class="font-bold">
+                        {{ rapport.audit.titre }}
+                    </p>
+                </div>
+
+                <div class="rounded-2xl bg-indigo-100 p-5">
+                    <p class="text-sm text-slate-500">
+                        Type
+                    </p>
+
+                    <p class="font-bold">
+                        {{ rapport.audit.get_type_audit_display }}
+                    </p>
+                </div>
+
+                <div class="rounded-2xl bg-orange-100 p-5">
+                    <p class="text-sm text-slate-500">
+                        Date
+                    </p>
+
+                    <p class="font-bold">
+                        {{ rapport.audit.date_audit }}
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Statistiques -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+
+                <div class="rounded-2xl bg-green-100 p-5 text-center">
+                    <p class="text-sm text-slate-500">
+                        Conformes
+                    </p>
+
+                    <p class="text-4xl font-black text-green-700">
+                        {{ conformes }}
+                    </p>
+                </div>
+
+                <div class="rounded-2xl bg-red-100 p-5 text-center">
+                    <p class="text-sm text-slate-500">
+                        Non conformes
+                    </p>
+
+                    <p class="text-4xl font-black text-red-700">
+                        {{ non_conformes }}
+                    </p>
+                </div>
+
+                <div class="rounded-2xl bg-yellow-100 p-5 text-center">
+                    <p class="text-sm text-slate-500">
+                        Abordables
+                    </p>
+
+                    <p class="text-4xl font-black text-yellow-700">
+                        {{ abordables }}
+                    </p>
+                </div>
+
+                <div class="rounded-2xl bg-sky-100 p-5 text-center">
+                    <p class="text-sm text-slate-500">
+                        Total réponses
+                    </p>
+
+                    <p class="text-4xl font-black text-sky-700">
+                        {{ checklist|length }}
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Tableau Checklist -->
+
+            <div>
+
+                <h3 class="text-2xl font-black mb-5">
+                    Résultats de la checklist
+                </h3>
+
+                <div class="overflow-hidden rounded-2xl border">
+
+                    <table class="min-w-full">
+
+                        <thead class="bg-slate-800 text-white">
+
+                        <tr>
+
+                            <th class="px-4 py-3 text-left">
+                                #
+                            </th>
+
+                            <th class="px-4 py-3 text-left">
+                                Point de contrôle
+                            </th>
+
+                            <th class="px-4 py-3 text-center">
+                                Statut
+                            </th>
+
+                            <th class="px-4 py-3 text-left">
+                                Remarque
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for rep in checklist %}
+
+                        <tr class="border-b hover:bg-slate-50">
+
+                            <td class="px-4 py-3">
+                                {{ rep.item.ordre }}
+                            </td>
+
+                            <td class="px-4 py-3">
+                                {{ rep.item.texte }}
+                            </td>
+
+                            <td class="px-4 py-3 text-center">
+
+                                {% if rep.statut == 'CONFORME' %}
+
+                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">
+                                        Conforme
+                                    </span>
+
+                                {% elif rep.statut == 'NON_CONFORME' %}
+
+                                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full font-bold">
+                                        Non conforme
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-bold">
+                                        Abordable
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td class="px-4 py-3">
+
+                                {% if rep.remarque %}
+                                    {{ rep.remarque }}
+                                {% else %}
+                                    -
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="4" class="text-center py-6 text-slate-500">
+                                Aucune réponse de checklist.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <!-- Boutons -->
+
+            <div class="flex gap-4 pt-2">
+
+                <a href="{% url 'rapport_pdf' rapport.id %}"
+                   class="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold">
+
+                    📄 Télécharger PDF
+
+                </a>
+
+                <a href="{% url 'rapports_list' %}"
+                   class="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-800 text-white font-bold">
+
+                    ← Retour
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

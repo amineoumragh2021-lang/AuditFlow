@@ -1,0 +1,30 @@
+{% extends 'audit/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="toolbar">
+    <div>
+        <span class="section-label">Formulaire</span>
+        <h2>{{ title }}</h2>
+        <p>Remplissez les informations demandées puis enregistrez.</p>
+    </div>
+</div>
+
+<div class="form-card reveal-card">
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="{% if field.field.widget.input_type == 'textarea' or field.name == 'description' or field.name == 'contenu' %}field-full{% endif %}">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<small class="mt-2 block text-xs text-slate-500">{{ field.help_text }}</small>{% endif %}
+                {% if field.errors %}<small class="mt-2 block text-xs font-bold text-red-600">{{ field.errors|striptags }}</small>{% endif %}
+            </div>
+        {% endfor %}
+        <div class="field-full flex flex-wrap gap-3 border-t border-slate-100 pt-5">
+            <button type="submit" class="btn-primary">{{ button }}</button>
+            <a href="javascript:history.back()" class="btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

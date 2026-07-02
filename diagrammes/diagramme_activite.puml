@@ -1,0 +1,108 @@
+@startuml
+
+' Diagramme d'Activité - Workflow Global
+
+start
+
+:Connexion utilisateur;
+
+if (Identifiants corrects?) then (Non)
+  :Afficher erreur;
+  stop
+else (Oui)
+  :Vérifier rôle utilisateur;
+endif
+
+switch (Rôle de l'utilisateur)
+
+case (Responsable)
+  :Dashboard Responsable;
+  
+  repeat
+    :Choisir action;
+    
+    partition "Actions Responsable"
+      if (Créer audit?) then (Oui)
+        :Remplir formulaire audit;
+        :Enregistrer audit;
+      elseif (Voir audits?) then (Oui)
+        :Afficher liste audits;
+      elseif (Gérer utilisateurs?) then (Oui)
+        :Afficher liste utilisateurs;
+      elseif (Gérer checklist?) then (Oui)
+        :Afficher checklist;
+      elseif (Calendrier?) then (Oui)
+        :Afficher calendrier;
+      elseif (Déconnexion?) then (Oui)
+        :Déconnecter;
+        stop
+      endif
+    end partition
+    
+  repeat while (Continuer?) is (Oui)
+  
+case (Auditeur)
+  :Dashboard Auditeur;
+  
+  repeat
+    :Choisir action;
+    
+    partition "Actions Auditeur"
+      if (Voir mes audits?) then (Oui)
+        :Afficher mes audits;
+      elseif (Créer rapport?) then (Oui)
+        :Sélectionner audit;
+        if (Date audit passée?) then (Non)
+          :Afficher erreur;
+        else (Oui)
+          if (Rapport existe déjà?) then (Oui)
+            :Afficher rapport existant;
+          else (Non)
+            :Remplir checklist;
+            :Enregistrer rapport;
+          endif
+        endif
+      elseif (Modifier rapport?) then (Oui)
+        :Modifier contenu;
+        :Modifier checklist;
+        :Enregistrer modifications;
+      elseif (Calendrier?) then (Oui)
+        :Afficher calendrier;
+      elseif (Déconnexion?) then (Oui)
+        :Déconnecter;
+        stop
+      endif
+    end partition
+    
+  repeat while (Continuer?) is (Oui)
+
+case (Client)
+  :Dashboard Client;
+  
+  repeat
+    :Choisir action;
+    
+    partition "Actions Client"
+      if (Voir mes audits?) then (Oui)
+        :Afficher mes audits;
+      elseif (Voir rapports?) then (Oui)
+        :Afficher rapports;
+        if (Exporter PDF?) then (Oui)
+          :Générer PDF;
+          :Télécharger PDF;
+        endif
+      elseif (Calendrier?) then (Oui)
+        :Afficher calendrier;
+      elseif (Déconnexion?) then (Oui)
+        :Déconnecter;
+        stop
+      endif
+    end partition
+    
+  repeat while (Continuer?) is (Oui)
+
+endswitch
+
+stop
+
+@enduml

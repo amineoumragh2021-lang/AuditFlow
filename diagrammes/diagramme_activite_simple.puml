@@ -1,0 +1,24 @@
+@startuml
+
+' Diagramme d'Activité - Version Ultra-Simple
+
+start
+
+:Se connecter;
+
+switch (Rôle de l'utilisateur)
+
+case (Responsable)
+  :Créer des audits;
+
+case (Auditeur)
+  :Écrire des rapports;
+
+case (Client)
+  :Voir les rapports;
+
+endswitch
+
+stop
+
+@enduml

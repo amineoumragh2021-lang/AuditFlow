@@ -1,0 +1,34 @@
+{% extends 'audit/base.html' %}
+{% block title %}Checklists{% endblock %}
+{% block page_title %}Checklists d'audit{% endblock %}
+{% block content %}
+<div class="toolbar">
+    <div>
+        <span class="section-label">Contrôle par type d'audit</span>
+        <h2>Checklists</h2>
+        <p>Chaque type d’audit possède ses propres points de contrôle.</p>
+    </div>
+    <a href="{% url 'checklist_create' %}" class="btn-primary">Ajouter des points</a>
+</div>
+
+<div class="grid gap-6 xl:grid-cols-2">
+    {% for type_name, items in grouped.items %}
+        <div class="panel reveal-card">
+            <div class="panel-head">
+                <div><span class="section-label">{{ items|length }} points</span><h3>{{ type_name }}</h3></div>
+                <span class="badge-soft">Actif</span>
+            </div>
+            <div class="max-h-[520px] space-y-3 overflow-auto pr-1">
+                {% for item in items %}
+                    <div class="list-row">
+                        <div class="order-badge">{{ item.ordre }}</div>
+                        <div class="min-w-0 flex-1"><strong>{{ item.texte }}</strong><small>Point de contrôle associé à {{ type_name }}</small></div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% empty %}
+        <div class="empty-card xl:col-span-2">Aucune checklist enregistrée.</div>
+    {% endfor %}
+</div>
+{% endblock %}

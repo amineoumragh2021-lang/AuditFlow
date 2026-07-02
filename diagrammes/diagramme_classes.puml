@@ -1,0 +1,63 @@
+@startuml
+
+' Diagramme de Classes - Modèles de Données
+
+class User {
+  + id : int
+  + username : string
+  + email : string
+  + first_name : string
+  + last_name : string
+  + password : string
+}
+
+class Profile {
+  + id : int
+  + role : string
+  + telephone : string
+  + ROLE_CHOICES : RESPONSABLE, AUDITEUR, CLIENT
+}
+
+class Audit {
+  + id : int
+  + titre : string
+  + type_audit : string
+  + date_audit : date
+  + description : text
+  + created_at : datetime
+  + TYPE_CHOICES : QUALITE, SECURITE, ENVIRONNEMENT, INTERNE
+}
+
+class ChecklistItem {
+  + id : int
+  + type_audit : string
+  + texte : string
+  + ordre : int
+  + actif : bool
+}
+
+class Rapport {
+  + id : int
+  + contenu : text
+  + date_creation : datetime
+  + checklist_score() : int
+}
+
+class ChecklistResponse {
+  + id : int
+  + statut : string
+  + remarque : string
+  + STATUT_CHOICES : CONFORME, NON_CONFORME, ABORDABLE
+}
+
+' Relations
+User "1" -- "1" Profile : a
+User "1" -- "0..*" Audit : crée (created_by)
+User "1" -- "0..*" Audit : est client (client)
+User "1" -- "0..*" Audit : est auditeur (auditeur)
+User "1" -- "0..*" Rapport : rédige (auteur)
+Audit "1" -- "0..*" Rapport : a
+Rapport "1" -- "0..*" ChecklistResponse : a
+ChecklistItem "1" -- "0..*" ChecklistResponse : a
+
+@enduml

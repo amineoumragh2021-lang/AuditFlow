@@ -1,0 +1,61 @@
+{% extends 'audit/base.html' %}
+{% block title %}Audits{% endblock %}
+{% block page_title %}Liste des audits{% endblock %}
+{% block content %}
+<div class="toolbar">
+    <div>
+        <span class="section-label">Planification</span>
+        <h2>Audits</h2>
+        <p>Consultez les audits, leurs dates, leurs clients et leurs auditeurs.</p>
+    </div>
+    {% if user.profile.role == 'RESPONSABLE' %}
+        <a href="{% url 'audit_create' %}" class="btn-primary">Planifier un audit</a>
+    {% endif %}
+</div>
+
+<div class="panel overflow-hidden reveal-card">
+    <div class="overflow-x-auto">
+        <table class="pro-table">
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Client</th>
+                    <th>Auditeur</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for audit in audits %}
+                <tr>
+                    <td>
+                        <strong>{{ audit.titre }}</strong>
+                        <small>{{ audit.description|truncatechars:72 }}</small>
+                    </td>
+                    <td><span class="type-pill">{{ audit.get_type_audit_display }}</span></td>
+                    <td>{{ audit.date_audit }}</td>
+                    <td>{% if audit.client %}{{ audit.client.get_full_name|default:audit.client.username }}{% else %}Non affecté{% endif %}</td>
+                    <td>{% if audit.auditeur %}{{ audit.auditeur.get_full_name|default:audit.auditeur.username }}{% else %}Non affecté{% endif %}</td>
+                    <td>
+                        {% if user.profile.role == 'RESPONSABLE' %}
+                            <a class="btn-small" href="{% url 'audit_update' audit.id %}">Modifier</a>
+                        {% endif %}
+
+                        {% if user.profile.role == 'AUDITEUR' %}
+                            <a class="btn-small" href="{% url 'rapport_create_for_audit' audit.id %}">Rapport + checklist</a>
+                        {% elif audit.rapports.first %}
+                            <a class="btn-small" href="{% url 'rapport_detail' audit.rapports.first.id %}">Consulter rapport</a>
+                        {% else %}
+                            <span class="text-sm font-bold text-slate-400">Aucun rapport</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6" class="empty-state">Aucun audit trouvé.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

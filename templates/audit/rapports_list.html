@@ -1,0 +1,25 @@
+{% extends 'audit/base.html' %}
+{% block title %}Rapports{% endblock %}
+{% block page_title %}Rapports d'audit{% endblock %}
+{% block content %}
+<div class="toolbar">
+    <div>
+        <span class="section-label">Partage des résultats</span>
+        <h2>Rapports</h2>
+        <p>Chaque rapport contient un résumé, une checklist et un score de conformité.</p>
+    </div>
+    {% if user.profile.role == 'AUDITEUR' %}<a href="{% url 'audits_list' %}" class="btn-primary">Ajouter un rapport</a>{% endif %}
+</div>
+<div class="grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
+    {% for rapport in rapports %}
+        <a href="{% url 'rapport_detail' rapport.id %}" class="report-card reveal-card">
+            <div class="relative z-10 flex items-center justify-between gap-3"><span class="badge-soft">Rapport</span><small class="font-bold text-slate-400">{{ rapport.date_creation|date:"d/m/Y" }}</small></div>
+            <h3>{{ rapport.audit.titre }}</h3>
+            <p>{{ rapport.contenu|truncatechars:140 }}</p>
+            <div class="relative z-10 mt-5 flex items-center justify-between text-sm"><span class="font-black text-slate-500">Score checklist</span><strong class="text-2xl font-black text-blue-700">{{ rapport.checklist_score }}%</strong></div>
+            <div class="progress-mini relative z-10 mt-2"><span style="width: {{ rapport.checklist_score }}%"></span></div>
+            <div class="relative z-10 mt-5 flex items-center justify-between border-t border-slate-100 pt-4"><span class="text-sm font-black text-slate-500">{{ rapport.audit.get_type_audit_display }}</span><strong class="text-blue-700">Voir détails →</strong></div>
+        </a>
+    {% empty %}<div class="empty-card">Aucun rapport disponible.</div>{% endfor %}
+</div>
+{% endblock %}

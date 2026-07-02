@@ -1,0 +1,53 @@
+{% extends 'audit/base.html' %}
+
+{% block title %}Modifier Rapport{% endblock %}
+{% block page_title %}Modifier le rapport{% endblock %}
+
+{% block content %}
+<div class="panel-lg reveal-card">
+    <span class="badge-soft">Modification</span>
+    <h2 class="mt-4 text-4xl font-black tracking-[-.04em] text-slate-950">Modifier le rapport</h2>
+    <p class="muted mt-2">{{ rapport.audit.titre }} • {{ rapport.audit.get_type_audit_display }}</p>
+
+    <form method="post" class="mt-6">
+        {% csrf_token %}
+
+        <div class="rounded-[28px] border border-slate-100 bg-slate-50/80 p-6">
+            <label class="section-label">Résumé du rapport</label>
+            <textarea name="contenu" rows="12"
+                class="w-full rounded-[24px] border border-slate-200 bg-white p-5 text-sm font-semibold text-slate-700 outline-none">{{ rapport.contenu }}</textarea>
+        </div>
+
+        <div class="mt-6 rounded-[28px] border border-slate-100 bg-white p-6">
+            <div class="panel-head">
+                <div>
+                    <span class="section-label">Contrôle détaillé</span>
+                    <h3>Modifier la checklist associée</h3>
+                </div>
+                <span class="badge-soft">{{ rapport.audit.get_type_audit_display }}</span>
+            </div>
+
+            <div class="space-y-4 mt-4">
+                {% for item in checklist_items %}
+                    <div class="rounded-[20px] border border-slate-100 bg-slate-50/70 p-4">
+                        <strong>{{ item.ordre }}. {{ item.texte }}</strong>
+                        <div class="mt-3 flex flex-wrap gap-3">
+                            <label><input type="radio" name="item_{{ item.id }}" value="CONFORME" checked> Conforme</label>
+                            <label><input type="radio" name="item_{{ item.id }}" value="NON_CONFORME"> Non conforme</label>
+                            <label><input type="radio" name="item_{{ item.id }}" value="ABORDABLE"> Abordable</label>
+                        </div>
+                        <textarea name="remarque_{{ item.id }}" rows="2"
+                            class="mt-3 w-full rounded-2xl border border-slate-200 p-3 text-sm"
+                            placeholder="Remarque..."></textarea>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="mt-5 flex gap-3">
+            <button type="submit" class="btn-primary">Enregistrer les modifications</button>
+            <a href="{% url 'rapport_detail' rapport.id %}" class="btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

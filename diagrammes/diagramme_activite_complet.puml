@@ -1,0 +1,151 @@
+  @startuml
+
+  ' Diagramme d'Activité - Workflow Complet
+
+  start
+
+  :Page de connexion;
+
+  if (Authentification réussie?) then (Non)
+    :Afficher erreur;
+    stop
+  else (Oui)
+    :Récupérer rôle utilisateur;
+  endif
+
+  switch (Rôle de l'utilisateur)
+
+  case (Responsable)
+    :Dashboard Responsable;
+    
+    repeat
+      :Choisir action dans le menu;
+      
+      if (Créer un audit?) then (Oui)
+        :Afficher formulaire de création;
+        if (Formulaire valide?) then (Non)
+          :Afficher erreurs;
+        else (Oui)
+          :Enregistrer l'audit;
+          :Afficher confirmation;
+        endif
+      elseif (Modifier un audit?) then (Oui)
+        :Sélectionner un audit;
+        :Afficher formulaire de modification;
+        :Mettre à jour l'audit;
+        :Afficher confirmation;
+      elseif (Voir les audits?) then (Oui)
+        :Afficher liste des audits;
+        if (Voir détail?) then (Oui)
+          :Afficher détail de l'audit;
+        endif
+      elseif (Gérer les utilisateurs?) then (Oui)
+        :Afficher liste des utilisateurs;
+        if (Ajouter utilisateur?) then (Oui)
+          :Afficher formulaire création;
+          :Enregistrer utilisateur;
+          :Afficher confirmation;
+        endif
+      elseif (Gérer la checklist?) then (Oui)
+        :Afficher liste des checklists;
+        if (Ajouter items?) then (Oui)
+          :Sélectionner type d'audit;
+          :Ajouter points de contrôle;
+          :Enregistrer;
+        endif
+      elseif (Voir les rapports?) then (Oui)
+        :Afficher liste des rapports;
+      elseif (Calendrier?) then (Oui)
+        :Afficher calendrier des audits;
+      elseif (Déconnexion?) then (Oui)
+        if (Confirmer déconnexion?) then (Oui)
+          :Déconnecter;
+          stop
+        endif
+      endif
+      
+    repeat while (Continuer?) is (Oui)
+
+  case (Auditeur)
+    :Dashboard Auditeur;
+    
+    repeat
+      :Choisir action dans le menu;
+      
+      if (Voir mes audits?) then (Oui)
+        :Afficher mes audits assignés;
+        if (Sélectionner audit?) then (Oui)
+          :Afficher détail de l'audit;
+          if (Créer rapport?) then (Oui)
+            if (Date de l'audit passée?) then (Non)
+              :Afficher erreur;
+            else (Oui)
+              if (Rapport existe déjà?) then (Oui)
+                :Afficher rapport existant;
+              else (Non)
+                :Charger checklist du type d'audit;
+                :Afficher formulaire avec checklist;
+                :Remplir contenu et réponses;
+                :Soumettre le rapport;
+                :Enregistrer rapport et réponses;
+                :Afficher confirmation;
+              endif
+            endif
+          endif
+        endif
+      elseif (Voir mes rapports?) then (Oui)
+        :Afficher mes rapports;
+        if (Sélectionner rapport?) then (Oui)
+          :Afficher détail du rapport;
+          if (Modifier rapport?) then (Oui)
+            :Modifier le contenu;
+            :Modifier les réponses checklist;
+            :Enregistrer les modifications;
+            :Afficher confirmation;
+          endif
+        endif
+      elseif (Calendrier?) then (Oui)
+        :Afficher calendrier;
+      elseif (Déconnexion?) then (Oui)
+        if (Confirmer déconnexion?) then (Oui)
+          :Déconnecter;
+          stop
+        endif
+      endif
+      
+    repeat while (Continuer?) is (Oui)
+
+  case (Client)
+    :Dashboard Client;
+    
+    repeat
+      :Choisir action dans le menu;
+      
+      if (Voir mes audits?) then (Oui)
+        :Afficher mes audits;
+      elseif (Voir les rapports?) then (Oui)
+        :Afficher rapports de mes audits;
+        if (Sélectionner rapport?) then (Oui)
+          :Afficher détail du rapport;
+          :Afficher score de conformité;
+          if (Exporter PDF?) then (Oui)
+            :Générer PDF;
+            :Télécharger fichier;
+          endif
+        endif
+      elseif (Calendrier?) then (Oui)
+        :Afficher calendrier;
+      elseif (Déconnexion?) then (Oui)
+        if (Confirmer déconnexion?) then (Oui)
+          :Déconnecter;
+          stop
+        endif
+      endif
+      
+    repeat while (Continuer?) is (Oui)
+
+  endswitch
+
+  stop
+
+  @enduml

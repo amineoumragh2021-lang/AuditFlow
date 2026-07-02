@@ -1,0 +1,93 @@
+@startuml
+
+' Diagramme d'Architecture - Structure de l'Application
+
+package "Client (Navigateur)" {
+  [Navigateur Web] as Browser
+  [Templates HTML] as Templates
+}
+
+package "Django Application" {
+  
+  package "URL Routing" {
+    [urls.py] as URLs
+    [config/urls.py] as ConfigURLs
+  }
+  
+  package "Views Layer" {
+    [views.py] as Views
+    [login_view, register_view, logout_view] as AuthViews
+    [dashboard] as DashboardViews
+    [audits_list, audit_create, audit_update, audit_detail] as AuditViews
+    [rapports_list, rapport_create, rapport_detail, rapport_modifier, rapport_pdf] as RapportViews
+    [checklist_list, checklist_create] as ChecklistViews
+    [users_list, user_create] as UserViews
+    [calendar_view] as CalendarView
+  }
+  
+  package "Forms Layer" {
+    [forms.py] as Forms
+    [UserForm] as UserForm
+    [RegisterForm] as RegisterForm
+    [AuditForm] as AuditForm
+    [RapportForm] as RapportForm
+    [RapportChecklistForm] as RapportChecklistForm
+  }
+  
+  package "Models Layer" {
+    [models.py] as Models
+    [User - Django Auth] as User
+    [Profile] as Profile
+    [Audit] as Audit
+    [ChecklistItem] as ChecklistItem
+    [Rapport] as Rapport
+    [ChecklistResponse] as ChecklistResponse
+  }
+  
+  package "Decorators" {
+    [decorators.py] as Decorators
+    [role_required] as RoleRequired
+  }
+  
+  package "Signals" {
+    [signals.py] as Signals
+  }
+  
+  package "Management Commands" {
+    [seed_demo.py] as SeedDemo
+  }
+}
+
+package "Database" {
+  database "SQLite - db.sqlite3" as SQLite
+}
+
+package "Static Files" {
+  folder "static/" as Static
+  [CSS] as CSS
+  [JavaScript] as JS
+}
+
+' Connections
+Browser --> ConfigURLs : HTTP Request
+ConfigURLs --> URLs
+URLs --> Views
+Views --> Forms : Validation
+Forms --> Models : CRUD Operations
+Models --> SQLite : Query
+SQLite --> Models : Return Data
+Models --> Views : Return Data
+Views --> Templates : Render
+Templates --> Browser : HTTP Response
+
+Views --> Decorators : Check Role
+Decorators --> Views : Allow/Deny
+
+Views --> Models : Use
+Models --> Signals : Auto-create Profile
+
+SeedDemo --> Models : Populate DB
+
+Templates --> Static : Load
+
+@enduml

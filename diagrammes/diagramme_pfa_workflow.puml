@@ -1,0 +1,38 @@
+@startuml
+
+' Workflow Simplifié pour PFA
+
+start
+
+:Connexion;
+
+switch (Rôle de l'utilisateur)
+
+case (Responsable)
+  :Planifier un audit;
+  :Créer audit (titre, type, date);
+  :Assigner auditeur et client;
+  :Enregistrer;
+
+case (Auditeur)
+  :Voir audits assignés;
+  if (Date de l'audit passée?) then (Oui)
+    :Écrire rapport;
+    :Remplir checklist;
+    :Enregistrer rapport;
+  else (Non)
+    :Attendre la date;
+  endif
+
+case (Client)
+  :Consulter les rapports;
+  :Voir score de conformité;
+  if (Exporter PDF?) then (Oui)
+    :Télécharger PDF;
+  endif
+
+endswitch
+
+stop
+
+@enduml

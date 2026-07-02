@@ -1,0 +1,554 @@
+@startuml
+
+' ============================================
+' TOUS LES DIAGRAMMES - AUDITFLOW (PLANTUML)
+' ============================================
+
+' ============================================
+' 1. DIAGRAMME DE CLASSES
+' ============================================
+
+class User {
+  + id : int
+  + username : string
+  + email : string
+  + first_name : string
+  + last_name : string
+  + password : string
+}
+
+class Profile {
+  + id : int
+  + role : string
+  + telephone : string
+  + ROLE_CHOICES : RESPONSABLE, AUDITEUR, CLIENT
+}
+
+class Audit {
+  + id : int
+  + titre : string
+  + type_audit : string
+  + date_audit : date
+  + description : text
+  + created_at : datetime
+  + TYPE_CHOICES : QUALITE, SECURITE, ENVIRONNEMENT, INTERNE
+}
+
+class ChecklistItem {
+  + id : int
+  + type_audit : string
+  + texte : string
+  + ordre : int
+  + actif : bool
+}
+
+class Rapport {
+  + id : int
+  + contenu : text
+  + date_creation : datetime
+  + checklist_score() : int
+}
+
+class ChecklistResponse {
+  + id : int
+  + statut : string
+  + remarque : string
+  + STATUT_CHOICES : CONFORME, NON_CONFORME, ABORDABLE
+}
+
+User "1" -- "1" Profile : a
+User "1" -- "0..*" Audit : crée (created_by)
+User "1" -- "0..*" Audit : est client (client)
+User "1" -- "0..*" Audit : est auditeur (auditeur)
+User "1" -- "0..*" Rapport : rédige (auteur)
+Audit "1" -- "0..*" Rapport : a
+Rapport "1" -- "0..*" ChecklistResponse : a
+ChecklistItem "1" -- "0..*" ChecklistResponse : a
+
+@enduml
+
+@startuml
+
+' ============================================
+' 2. DIAGRAMME DE CAS D'UTILISATION
+' ============================================
+
+actor "Responsable Audit" as Responsable
+actor "Auditeur" as Auditeur
+actor "Client" as Client
+
+rectangle "AuditFlow" {
+  usecase "Se connecter" as UC1
+  usecase "S'inscrire" as UC2
+  usecase "Voir Dashboard" as UC3
+  usecase "Créer un audit" as UC4
+  usecase "Modifier un audit" as UC5
+  usecase "Voir les audits" as UC6
+  usecase "Voir le détail d'un audit" as UC7
+  usecase "Créer un rapport" as UC8
+  usecase "Modifier un rapport" as UC9
+  usecase "Voir les rapports" as UC10
+  usecase "Voir le détail d'un rapport" as UC11
+  usecase "Exporter un rapport en PDF" as UC12
+  usecase "Gérer les utilisateurs" as UC13
+  usecase "Gérer les checklists" as UC14
+  usecase "Voir le calendrier" as UC15
+}
+
+Responsable --> UC1
+Responsable --> UC3
+Responsable --> UC4
+Responsable --> UC5
+Responsable --> UC6
+Responsable --> UC7
+Responsable --> UC10
+Responsable --> UC11
+Responsable --> UC12
+Responsable --> UC13
+Responsable --> UC14
+Responsable --> UC15
+
+Auditeur --> UC1
+Auditeur --> UC3
+Auditeur --> UC6
+Auditeur --> UC7
+Auditeur --> UC8
+Auditeur --> UC9
+Auditeur --> UC10
+Auditeur --> UC11
+Auditeur --> UC12
+Auditeur --> UC15
+
+Client --> UC1
+Client --> UC2
+Client --> UC3
+Client --> UC6
+Client --> UC7
+Client --> UC10
+Client --> UC11
+Client --> UC12
+Client --> UC15
+
+@enduml
+
+@startuml
+
+' ============================================
+' 3. DIAGRAMME DE SÉQUENCE (VERSION SIMPLIFIÉE)
+' ============================================
+
+actor "Utilisateur" as User
+participant "Application Django" as App
+database "Base de Données" as DB
+
+== Flux principal de l'application ==
+
+' 1. Connexion
+User -> App : Se connecte (email/password)
+App -> DB : Vérifie identifiants
+DB --> App : Utilisateur trouvé
+App --> User : Dashboard affiché
+
+' 2. Création d'audit (Responsable)
+User -> App : Crée un audit
+App -> DB : Enregistre l'audit
+DB --> App : Audit créé
+App --> User : Confirmation
+
+' 3. Rédaction de rapport (Auditeur)
+User -> App : Rédige rapport pour audit
+App -> DB : Vérifie date et existence
+DB --> App : OK
+App -> DB : Enregistre rapport + checklist
+DB --> App : Rapport créé
+App --> User : Rapport affiché
+
+' 4. Modification de rapport (Auditeur)
+User -> App : Modifie son rapport
+App -> DB : Met à jour rapport et checklist
+DB --> App : Modifications enregistrées
+App --> User : Rapport mis à jour
+
+' 5. Consultation (Client)
+User -> App : Consulte ses audits/rapports
+App -> DB : Récupère données
+DB --> App : Données
+App --> User : Liste affichée
+
+' 6. Export PDF
+User -> App : Demande PDF
+App -> DB : Récupère rapport complet
+DB --> App : Données
+App -> App : Génère PDF
+App --> User : Fichier PDF téléchargé
+
+@enduml
+
+@startuml
+
+' ============================================
+' 4. DIAGRAMME DE SÉQUENCE (VERSION PAR RÔLE)
+' ============================================
+
+actor "Responsable" as Resp
+actor "Auditeur" as Aud
+actor "Client" as Cli
+participant "Application Django" as App
+database "Base de Données" as DB
+
+note over Resp,DB : Cycle de vie d'un audit
+
+== Phase 1: Planification (Responsable) ==
+
+Resp -> App : Crée un audit
+App -> DB : Enregistre audit (titre, type, date)
+DB --> App : Audit créé
+App -> DB : Affecte client et auditeur
+DB --> App : Affectation OK
+App --> Resp : Audit planifié
+
+== Phase 2: Consultation (Auditeur et Client) ==
+
+Aud -> App : Consulte ses audits assignés
+App -> DB : Récupère audits de l'auditeur
+DB --> App : Liste des audits
+App --> Aud : Affiche ses audits
+
+Cli -> App : Consulte ses audits
+App -> DB : Récupère audits du client
+DB --> App : Liste des audits
+App --> Cli : Affiche ses audits
+
+== Phase 3: Rédaction du rapport (Auditeur) ==
+
+Aud -> App : Demande à rédiger rapport
+App -> DB : Vérifie date de l'audit
+DB --> App : Date passée ✓
+App -> DB : Vérifie si rapport existe
+DB --> App : Aucun rapport ✓
+App -> DB : Charge checklist du type d'audit
+DB --> App : Items de checklist
+App --> Aud : Formulaire avec checklist
+Aud -> App : Soumet rapport + réponses
+App -> DB : Enregistre rapport
+App -> DB : Enregistre réponses checklist
+DB --> App : Rapport créé
+App --> Aud : Rapport enregistré
+
+== Phase 4: Modification (Auditeur) ==
+
+Aud -> App : Modifie son rapport
+App -> DB : Vérifie autorisation (auteur)
+DB --> App : Autorisé ✓
+App -> DB : Met à jour contenu
+App -> DB : Met à jour réponses checklist
+DB --> App : Modifications OK
+App --> Aud : Rapport mis à jour
+
+== Phase 5: Consultation du rapport (Client) ==
+
+Cli -> App : Consulte les rapports
+App -> DB : Récupère rapports de ses audits
+DB --> App : Liste des rapports
+App --> Cli : Affiche rapports
+Cli -> App : Ouvre un rapport
+App -> DB : Récupère rapport + checklist
+DB --> App : Détails complets
+App --> Cli : Affiche rapport avec score
+
+== Phase 6: Export PDF (Tous les rôles) ==
+
+Cli -> App : Demande PDF du rapport
+App -> DB : Récupère toutes les données
+DB --> App : Données complètes
+App -> App : Génère PDF (ReportLab)
+App --> Cli : Fichier PDF téléchargé
+
+@enduml
+
+@startuml
+
+' ============================================
+' 5. DIAGRAMME DE SÉQUENCE (VERSION ULTRA-SIMPLE)
+' ============================================
+
+actor "Utilisateur" as User
+participant "Système" as System
+database "Base de données" as DB
+
+note over User,DB : Processus simple d'AuditFlow
+
+' 1. Connexion
+User -> System : Se connecte
+System -> DB : Vérifie utilisateur
+DB --> System : OK
+System --> User : Bienvenue
+
+' 2. Responsable crée un audit
+User -> System : Planifie un audit
+System -> DB : Sauvegarde l'audit
+DB --> System : Audit enregistré
+System --> User : Audit créé ✓
+
+' 3. Auditeur voit ses audits
+User -> System : Voir mes audits
+System -> DB : Cherche audits
+DB --> System : Liste trouvée
+System --> User : Voici vos audits
+
+' 4. Auditeur rédige le rapport
+User -> System : Écrire rapport
+System -> DB : Vérifie date
+DB --> System : Date OK
+System -> DB : Sauvegarde rapport
+DB --> System : Rapport enregistré
+System --> User : Rapport envoyé ✓
+
+' 5. Client voit le rapport
+User -> System : Voir les rapports
+System -> DB : Cherche rapports
+DB --> System : Liste trouvée
+System --> User : Voici les rapports
+
+' 6. Export PDF
+User -> System : Télécharger PDF
+System -> DB : Prend les données
+DB --> System : Données prêtes
+System -> System : Crée le PDF
+System --> User : PDF téléchargé ✓
+
+@enduml
+
+@startuml
+
+' ============================================
+' 6. DIAGRAMME D'ACTIVITÉ (VERSION ULTRA-SIMPLE)
+' ============================================
+
+start
+
+:Se connecter;
+
+switch (Rôle de l'utilisateur)
+
+case (Responsable)
+  :Créer des audits;
+
+case (Auditeur)
+  :Écrire des rapports;
+
+case (Client)
+  :Voir les rapports;
+
+endswitch
+
+stop
+
+@enduml
+
+@startuml
+
+' ============================================
+' 7. DIAGRAMME D'ACTIVITÉ (VERSION DÉTAILLÉE)
+' ============================================
+
+start
+
+:Connexion utilisateur;
+
+if (Identifiants corrects?) then (Non)
+  :Afficher erreur;
+  stop
+else (Oui)
+  :Vérifier rôle utilisateur;
+endif
+
+switch (Rôle de l'utilisateur)
+
+case (Responsable)
+  :Dashboard Responsable;
+  
+  repeat
+    :Choisir action;
+    
+    partition "Actions Responsable"
+      if (Créer audit?) then (Oui)
+        :Remplir formulaire audit;
+        :Enregistrer audit;
+      elseif (Voir audits?) then (Oui)
+        :Afficher liste audits;
+      elseif (Gérer utilisateurs?) then (Oui)
+        :Afficher liste utilisateurs;
+      elseif (Gérer checklist?) then (Oui)
+        :Afficher checklist;
+      elseif (Calendrier?) then (Oui)
+        :Afficher calendrier;
+      elseif (Déconnexion?) then (Oui)
+        :Déconnecter;
+        stop
+      endif
+    end partition
+    
+  repeat while (Continuer?) is (Oui)
+  
+case (Auditeur)
+  :Dashboard Auditeur;
+  
+  repeat
+    :Choisir action;
+    
+    partition "Actions Auditeur"
+      if (Voir mes audits?) then (Oui)
+        :Afficher mes audits;
+      elseif (Créer rapport?) then (Oui)
+        :Sélectionner audit;
+        if (Date audit passée?) then (Non)
+          :Afficher erreur;
+        else (Oui)
+          if (Rapport existe déjà?) then (Oui)
+            :Afficher rapport existant;
+          else (Non)
+            :Remplir checklist;
+            :Enregistrer rapport;
+          endif
+        endif
+      elseif (Modifier rapport?) then (Oui)
+        :Modifier contenu;
+        :Modifier checklist;
+        :Enregistrer modifications;
+      elseif (Calendrier?) then (Oui)
+        :Afficher calendrier;
+      elseif (Déconnexion?) then (Oui)
+        :Déconnecter;
+        stop
+      endif
+    end partition
+    
+  repeat while (Continuer?) is (Oui)
+
+case (Client)
+  :Dashboard Client;
+  
+  repeat
+    :Choisir action;
+    
+    partition "Actions Client"
+      if (Voir mes audits?) then (Oui)
+        :Afficher mes audits;
+      elseif (Voir rapports?) then (Oui)
+        :Afficher rapports;
+        if (Exporter PDF?) then (Oui)
+          :Générer PDF;
+          :Télécharger PDF;
+        endif
+      elseif (Calendrier?) then (Oui)
+        :Afficher calendrier;
+      elseif (Déconnexion?) then (Oui)
+        :Déconnecter;
+        stop
+      endif
+    end partition
+    
+  repeat while (Continuer?) is (Oui)
+
+endswitch
+
+stop
+
+@enduml
+
+@startuml
+
+' ============================================
+' 8. DIAGRAMME D'ARCHITECTURE
+' ============================================
+
+package "Client (Navigateur)" {
+  [Navigateur Web] as Browser
+  [Templates HTML] as Templates
+}
+
+package "Django Application" {
+  
+  package "URL Routing" {
+    [urls.py] as URLs
+    [config/urls.py] as ConfigURLs
+  }
+  
+  package "Views Layer" {
+    [views.py] as Views
+    [login_view, register_view, logout_view] as AuthViews
+    [dashboard] as DashboardViews
+    [audits_list, audit_create, audit_update, audit_detail] as AuditViews
+    [rapports_list, rapport_create, rapport_detail, rapport_modifier, rapport_pdf] as RapportViews
+    [checklist_list, checklist_create] as ChecklistViews
+    [users_list, user_create] as UserViews
+    [calendar_view] as CalendarView
+  }
+  
+  package "Forms Layer" {
+    [forms.py] as Forms
+    [UserForm] as UserForm
+    [RegisterForm] as RegisterForm
+    [AuditForm] as AuditForm
+    [RapportForm] as RapportForm
+    [RapportChecklistForm] as RapportChecklistForm
+  }
+  
+  package "Models Layer" {
+    [models.py] as Models
+    [User - Django Auth] as User
+    [Profile] as Profile
+    [Audit] as Audit
+    [ChecklistItem] as ChecklistItem
+    [Rapport] as Rapport
+    [ChecklistResponse] as ChecklistResponse
+  }
+  
+  package "Decorators" {
+    [decorators.py] as Decorators
+    [role_required] as RoleRequired
+  }
+  
+  package "Signals" {
+    [signals.py] as Signals
+  }
+  
+  package "Management Commands" {
+    [seed_demo.py] as SeedDemo
+  }
+}
+
+package "Database" {
+  database "SQLite - db.sqlite3" as SQLite
+}
+
+package "Static Files" {
+  folder "static/" as Static
+  [CSS] as CSS
+  [JavaScript] as JS
+}
+
+' Connections
+Browser --> ConfigURLs : HTTP Request
+ConfigURLs --> URLs
+URLs --> Views
+Views --> Forms : Validation
+Forms --> Models : CRUD Operations
+Models --> SQLite : Query
+SQLite --> Models : Return Data
+Models --> Views : Return Data
+Views --> Templates : Render
+Templates --> Browser : HTTP Response
+
+Views --> Decorators : Check Role
+Decorators --> Views : Allow/Deny
+
+Views --> Models : Use
+Models --> Signals : Auto-create Profile
+
+SeedDemo --> Models : Populate DB
+
+Templates --> Static : Load
+
+@enduml

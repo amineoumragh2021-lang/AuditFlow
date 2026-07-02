@@ -1,0 +1,64 @@
+@startuml
+
+' Diagramme des Cas d'Utilisation
+
+left to right direction
+
+actor "Responsable Audit" as Responsable
+actor "Auditeur" as Auditeur
+actor "Client" as Client
+
+rectangle "AuditFlow" {
+  usecase "Se connecter" as UC1
+  usecase "S'inscrire" as UC2
+  usecase "Voir Dashboard" as UC3
+  usecase "Créer un audit" as UC4
+  usecase "Modifier un audit" as UC5
+  usecase "Voir les audits" as UC6
+  usecase "Voir le détail d'un audit" as UC7
+  usecase "Créer un rapport" as UC8
+  usecase "Modifier un rapport" as UC9
+  usecase "Voir les rapports" as UC10
+  usecase "Voir le détail d'un rapport" as UC11
+  usecase "Exporter un rapport en PDF" as UC12
+  usecase "Gérer les utilisateurs" as UC13
+  usecase "Gérer les checklists" as UC14
+  usecase "Voir le calendrier" as UC15
+}
+
+' Relations
+Responsable --> UC1
+Responsable --> UC3
+Responsable --> UC4
+Responsable --> UC5
+Responsable --> UC6
+Responsable --> UC7
+Responsable --> UC10
+Responsable --> UC11
+Responsable --> UC12
+Responsable --> UC13
+Responsable --> UC14
+Responsable --> UC15
+
+Auditeur --> UC1
+Auditeur --> UC3
+Auditeur --> UC6
+Auditeur --> UC7
+Auditeur --> UC8
+Auditeur --> UC9
+Auditeur --> UC10
+Auditeur --> UC11
+Auditeur --> UC12
+Auditeur --> UC15
+
+Client --> UC1
+Client --> UC2
+Client --> UC3
+Client --> UC6
+Client --> UC7
+Client --> UC10
+Client --> UC11
+Client --> UC12
+Client --> UC15
+
+@enduml

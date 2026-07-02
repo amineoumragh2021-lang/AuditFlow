@@ -1,0 +1,217 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AuditFlow{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'audit/css/style.css' %}">
+</head>
+
+<body class="app-bg">
+
+<div class="shell">
+
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <a href="{% url 'dashboard' %}" class="brand">
+            <div class="brand-logo pulse-soft">AF</div>
+
+            <div>
+                <div class="brand-title">AuditFlow</div>
+                <div class="brand-sub">PFA Industrial</div>
+            </div>
+        </a>
+
+        <nav class="nav">
+
+            <a href="{% url 'dashboard' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}nav-active{% endif %}">
+                <span class="nav-ico">D</span>
+                <span>Tableau de bord</span>
+            </a>
+
+            <a href="{% url 'audits_list' %}"
+               class="nav-link {% if 'audit' in request.resolver_match.url_name %}nav-active{% endif %}">
+                <span class="nav-ico">A</span>
+                <span>Audits</span>
+            </a>
+
+            <a href="{% url 'calendar' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'calendar' %}nav-active{% endif %}">
+                <span class="nav-ico">📅</span>
+                <span>Calendrier</span>
+            </a>
+
+            <a href="{% url 'rapports_list' %}"
+               class="nav-link {% if 'rapport' in request.resolver_match.url_name %}nav-active{% endif %}">
+                <span class="nav-ico">R</span>
+                <span>Rapports</span>
+            </a>
+
+            {% if user.profile.role == 'RESPONSABLE' %}
+            <a href="{% url 'checklist_list' %}"
+               class="nav-link {% if 'checklist' in request.resolver_match.url_name %}nav-active{% endif %}">
+                <span class="nav-ico">C</span>
+                <span>Checklists</span>
+            </a>
+
+            <a href="{% url 'users_list' %}"
+               class="nav-link {% if 'user' in request.resolver_match.url_name %}nav-active{% endif %}">
+                <span class="nav-ico">U</span>
+                <span>Utilisateurs</span>
+            </a>
+            {% endif %}
+
+        </nav>
+
+        <div class="mt-8 rounded-[24px] border border-white/10 bg-white/[.06] p-5">
+            <p class="text-[11px] font-black uppercase tracking-[.18em] text-blue-200">
+                Espace actif
+            </p>
+
+            <p class="mt-2 text-lg font-black">
+                {{ user.profile.get_role_display }}
+            </p>
+
+            <p class="mt-2 text-sm leading-6 text-slate-300">
+                Interface adaptée automatiquement selon vos autorisations.
+            </p>
+        </div>
+
+        <div class="sidebar-card">
+
+            <div class="flex items-center gap-3">
+
+                <div class="avatar">
+                    {{ user.first_name|first|default:user.username|first|upper }}
+                </div>
+
+                <div class="min-w-0">
+
+                    <p class="truncate font-black">
+                        {{ user.get_full_name|default:user.username }}
+                    </p>
+
+                    <p class="truncate text-xs font-semibold text-slate-400">
+                        {{ user.email }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            <a href="{% url 'logout' %}" class="logout-link">
+                Déconnexion
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar fade-up">
+
+            <div>
+
+                <p class="eyebrow">
+                    Gestion numérique des audits
+                </p>
+
+                <h1 class="page-title">
+                    {% block page_title %}
+                    Tableau de bord
+                    {% endblock %}
+                </h1>
+
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+
+                <div class="user-chip">
+                    <span class="online-dot"></span>
+                    Connecté
+                </div>
+
+                <a href="{% url 'logout' %}" class="btn-secondary lg:hidden">
+                    Quitter
+                </a>
+
+            </div>
+
+        </header>
+
+        <div class="mobile-nav fade-up delay-1">
+
+            <a href="{% url 'dashboard' %}" class="mobile-tab">
+                Dashboard
+            </a>
+
+            <a href="{% url 'audits_list' %}" class="mobile-tab">
+                Audits
+            </a>
+
+            <a href="{% url 'calendar' %}" class="mobile-tab">
+                Calendrier
+            </a>
+
+            <a href="{% url 'rapports_list' %}" class="mobile-tab">
+                Rapports
+            </a>
+
+            {% if user.profile.role == 'RESPONSABLE' %}
+            <a href="{% url 'checklist_list' %}" class="mobile-tab">
+                Checklists
+            </a>
+
+            <a href="{% url 'users_list' %}" class="mobile-tab">
+                Utilisateurs
+            </a>
+            {% endif %}
+
+        </div>
+
+        {% if messages %}
+
+        <div class="mb-5 space-y-3">
+
+            {% for message in messages %}
+
+            <div class="fade-up rounded-[22px] border bg-white/90 px-5 py-4 font-bold shadow-lg
+                {% if message.tags == 'error' %}
+                    border-red-200 text-red-700
+                {% else %}
+                    border-emerald-200 text-emerald-700
+                {% endif %}">
+                {{ message }}
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% endif %}
+
+        <section class="fade-up delay-2">
+
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="{% static 'audit/js/app.js' %}"></script>
+
+</body>
+</html>

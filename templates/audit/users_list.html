@@ -1,0 +1,21 @@
+{% extends 'audit/base.html' %}
+{% block title %}Utilisateurs{% endblock %}
+{% block page_title %}Gestion des utilisateurs{% endblock %}
+{% block content %}
+<div class="toolbar">
+    <div><span class="section-label">Responsable Audit</span><h2>Utilisateurs</h2><p>Gestion des comptes : Client, Auditeur et Responsable Audit.</p></div>
+    <a href="{% url 'user_create' %}" class="btn-primary">Ajouter un utilisateur</a>
+</div>
+<div class="panel overflow-hidden reveal-card">
+    <div class="overflow-x-auto">
+        <table class="pro-table">
+            <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Date création</th></tr></thead>
+            <tbody>
+            {% for u in users %}
+                <tr><td><strong>{{ u.get_full_name|default:u.username }}</strong><small>@{{ u.username }}</small></td><td>{{ u.email }}</td><td><span class="type-pill">{{ u.profile.get_role_display }}</span></td><td>{{ u.date_joined|date:"d/m/Y" }}</td></tr>
+            {% empty %}<tr><td colspan="4" class="empty-state">Aucun utilisateur.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

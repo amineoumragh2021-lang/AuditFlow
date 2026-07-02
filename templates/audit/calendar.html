@@ -1,0 +1,55 @@
+{% extends "audit/base.html" %}
+{% block title %}Calendrier des audits{% endblock %}
+{% block page_title %}Calendrier personnel{% endblock %}
+{% block content %}
+<div class="calendar-premium">
+    <div class="calendar-hero-pro reveal-card">
+        <div>
+            <span class="calendar-tag">Planification</span>
+            <h2>Calendrier des audits</h2>
+            <p>Vue mensuelle des audits selon votre rôle : Responsable, Auditeur ou Client.</p>
+        </div>
+        <div class="month-box">
+            <span>Mois sélectionné</span>
+            <strong>{{ current_month }}</strong>
+            <div class="month-nav">
+                <a href="{{ prev_month_url }}">← Précédent</a>
+                <a href="{% url 'calendar' %}">Aujourd'hui</a>
+                <a href="{{ next_month_url }}">Suivant →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="calendar-grid-card reveal-card">
+        <div class="calendar-weekdays">
+            <div>Lundi</div><div>Mardi</div><div>Mercredi</div><div>Jeudi</div><div>Vendredi</div><div>Samedi</div><div>Dimanche</div>
+        </div>
+        <div class="calendar-grid-pro">
+            {% for day in calendar_days %}
+                <div class="calendar-day-pro {% if day.is_other_month %}muted-day{% endif %} {% if day.is_today %}today-day{% endif %} {% if day.audits %}busy-day{% endif %}">
+                    <div class="day-head">
+                        <span>{{ day.day }}</span>
+                        {% if day.is_today %}<em>Aujourd'hui</em>{% endif %}
+                    </div>
+                    <div class="day-events">
+                        {% for audit in day.audits %}
+                            <a href="{% url 'audits_list' %}" class="event-pill">
+                                <strong>{{ audit.titre|truncatechars:28 }}</strong>
+                                <small>{{ audit.get_type_audit_display }}</small>
+                            </a>
+                        {% empty %}
+                            <small class="no-event">Aucun audit</small>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="calendar-legend">
+        <span><i class="dot-blue"></i> Audit planifié</span>
+        <span><i class="dot-green"></i> Aujourd'hui</span>
+        <span><i class="dot-gray"></i> Autre mois</span>
+    </div>
+</div>
+{% endblock %}

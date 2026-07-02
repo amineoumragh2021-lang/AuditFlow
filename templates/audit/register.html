@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - AuditFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'audit/css/style.css' %}">
+</head>
+<body class="auth-bg min-h-screen text-slate-900">
+    <div class="absolute inset-0 grid-pattern opacity-50"></div>
+    <div class="relative grid min-h-screen place-items-center p-4 sm:p-8">
+        <div class="auth-card grid lg:grid-cols-[.88fr_1.12fr] fade-up">
+            <section class="relative hidden overflow-hidden p-12 text-white lg:block">
+                <div class="absolute -left-24 top-20 h-72 w-72 rounded-full bg-cyan-400/25 blur-3xl floaty"></div>
+                <div class="relative z-10 flex h-full flex-col justify-center">
+                    <span class="mb-7 w-max rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[.22em] text-blue-100">Inscription</span>
+                    <h1 class="text-6xl font-black leading-[.9] tracking-[-.06em]">Bienvenue chez AuditFlow</h1>
+                    <p class="mt-6 text-lg leading-8 text-slate-300">Créez uniquement un compte Client pour consulter vos audits, vos rapports et votre calendrier. Les responsables et auditeurs sont créés par l’administrateur.</p>
+                    <div class="mt-9 space-y-4">
+                        <div class="feature-pill"><span class="feature-dot"></span><div><strong class="text-white">Consultez</strong><small class="block text-slate-300">Vos audits planifiés et vos rapports d'audit.</small></div></div>
+                        <div class="feature-pill"><span class="feature-dot"></span><div><strong class="text-white">Suivez</strong><small class="block text-slate-300">L'avancement de vos audits en temps réel.</small></div></div>
+                        <div class="feature-pill"><span class="feature-dot"></span><div><strong class="text-white">Sécurisé</strong><small class="block text-slate-300">Accès protégé réservé aux clients autorisés.</small></div></div>
+                    </div>
+                </div>
+            </section>
+            <section class="auth-panel">
+                <div class="mx-auto max-w-2xl">
+                    <div class="auth-logo mb-7">AF</div>
+                    <p class="eyebrow">Nouveau compte</p>
+                    <h2 class="auth-title mt-2">Inscription</h2>
+                    <p class="muted mt-4">Créez votre compte client. Les responsables audit et auditeurs sont gérés par l'administrateur.</p>
+                    <form method="post" class="tw-form mt-8 grid gap-5 sm:grid-cols-2">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {% if field.name != 'role' %}
+                            <div class="{% if field.name == 'password' or field.name == 'email' %}sm:col-span-2{% endif %}">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}<small class="mt-2 block text-xs text-slate-500">{{ field.help_text }}</small>{% endif %}
+                                {% if field.errors %}<small class="mt-2 block text-xs font-bold text-red-600">{{ field.errors|striptags }}</small>{% endif %}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        <button type="submit" class="btn-primary sm:col-span-2">Créer mon compte Client</button>
+                    </form>
+                    <div class="mt-6 rounded-[22px] border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-600">Déjà inscrit ? <a href="{% url 'login' %}" class="font-black text-blue-700">Se connecter</a></div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script src="{% static 'audit/js/app.js' %}"></script>
+</body>
+</html>

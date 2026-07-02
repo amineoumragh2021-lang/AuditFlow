@@ -1,0 +1,76 @@
+{% extends 'audit/base.html' %}
+{% block title %}Rapport avec checklist{% endblock %}
+{% block page_title %}Rédiger le rapport{% endblock %}
+{% block content %}
+<div class="toolbar checklist-topbar">
+    <div>
+        <span class="section-label">Audit affecté</span>
+        <h2>{{ audit.titre }}</h2>
+        <p>{{ audit.get_type_audit_display }} • Date : {{ audit.date_audit }} • Client : {% if audit.client %}{{ audit.client.get_full_name|default:audit.client.username }}{% else %}Non affecté{% endif %}</p>
+    </div>
+    <span class="date-chip">{{ audit.date_audit|date:"d/m/Y" }}</span>
+</div>
+
+<form method="post" class="space-y-6">
+    {% csrf_token %}
+    <div class="form-card reveal-card">
+        <span class="section-label">Résumé général</span>
+        <h3 class="mt-2 text-2xl font-black tracking-tight">Observations, problèmes et recommandations</h3>
+        <p class="muted mt-2">Décrivez les constats principaux, les écarts, les points forts et les actions recommandées.</p>
+        <div class="tw-form mt-5">
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<small class="mt-2 block text-xs font-bold text-red-600">{{ field.errors|striptags }}</small>{% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel-lg reveal-card checklist-premium-panel">
+        <div class="panel-head">
+            <div>
+                <span class="section-label">Checklist</span>
+                <h3>{{ audit.get_type_audit_display }}</h3>
+                <p class="muted mt-1">Choisissez l'état de chaque point. Le score est calculé avec Conforme et Non conforme. Abordable reste affiché, mais n’influence pas le score.</p>
+            </div>
+            <span class="badge-soft">{{ checklist_items|length }} points</span>
+        </div>
+
+        <div class="grid gap-4 xl:grid-cols-2">
+            {% for item in checklist_items %}
+                <div class="checklist-card checklist-card-pro">
+                    <div class="check-card-header">
+                        <span class="order-badge">{{ item.ordre }}</span>
+                        <div class="check-title">{{ item.texte }}</div>
+                    </div>
+
+                    <div class="check-options check-options-pro">
+                        <label class="state-btn">
+                            <input class="state-input" type="radio" name="item_{{ item.id }}" value="CONFORME" checked>
+                            <span class="state-pill state-conforme">Conforme</span>
+                        </label>
+                        <label class="state-btn">
+                            <input class="state-input" type="radio" name="item_{{ item.id }}" value="NON_CONFORME">
+                            <span class="state-pill state-non">Non conforme</span>
+                        </label>
+                        <label class="state-btn">
+                            <input class="state-input" type="radio" name="item_{{ item.id }}" value="ABORDABLE">
+                            <span class="state-pill state-abordable">Abordable</span>
+                        </label>
+                    </div>
+                    <input class="remark-input" type="text" name="remarque_{{ item.id }}" placeholder="Remarque facultative pour ce point">
+                </div>
+            {% empty %}
+                <p class="empty-state xl:col-span-2">Aucun point de checklist pour ce type d’audit.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="sticky-actions">
+        <button class="btn-primary" type="submit">Enregistrer le rapport</button>
+        <a href="{% url 'audits_list' %}" class="btn-secondary">Annuler</a>
+    </div>
+</form>
+{% endblock %}
