@@ -6,6 +6,18 @@
     <span class="badge-soft">Audit</span>
     <h2 class="mt-4 text-4xl font-black">{{ audit.titre }}</h2>
     <p class="muted mt-2">{{ audit.get_type_audit_display }} • {{ audit.date_audit }}</p>
+    <div class="settings-links mission-detail-links">
+        {% if user.profile.role == 'RESPONSABLE' %}<a class="btn-primary" href="{% url 'audit_update' audit.pk %}">Modifier la mission</a>{% endif %}
+        <a class="btn-secondary" href="{% url 'governance_list' 'findings' %}?audit={{ audit.pk }}">Constats</a>
+        <a class="btn-secondary" href="{% url 'governance_list' 'risks' %}?audit={{ audit.pk }}">Risques</a>
+        <a class="btn-secondary" href="{% url 'governance_list' 'actions' %}?audit={{ audit.pk }}">Actions</a>
+        <a class="btn-secondary" href="{% url 'governance_list' 'documents' %}?audit={{ audit.pk }}">Documents</a>
+    </div>
+    <div class="mt-6 grid gap-4 md:grid-cols-3">
+        <div class="meta-box"><strong>Organisation / département</strong><span>{{ audit.organisation|default:'Non renseignée' }} · {{ audit.department.nom|default:'Non renseigné' }}</span></div>
+        <div class="meta-box"><strong>Cycle et progression</strong><span>{{ audit.get_stage_display }} · {{ audit.progress }}%</span><div class="track"><span style="width:{{ audit.progress }}%"></span></div></div>
+        <div class="meta-box"><strong>Risque / échéance</strong><span class="priority {{ audit.priority }}">{{ audit.get_priority_display }}</span><span>{{ audit.end_date|date:'d/m/Y'|default:'Échéance non renseignée' }}</span></div>
+    </div>
 
     <div class="mt-6 grid gap-4 md:grid-cols-3">
         <div class="meta-box"><strong>Client</strong><span>{% if audit.client %}{{ audit.client.get_full_name|default:audit.client.username }}{% else %}Non affecté{% endif %}</span></div>

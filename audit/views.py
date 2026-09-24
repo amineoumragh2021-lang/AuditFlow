@@ -9,6 +9,9 @@ from .models import Audit, Rapport, ChecklistItem, ChecklistResponse, Profile
 from .forms import UserForm, RegisterForm, AuditForm, RapportForm, RapportChecklistForm
 from .decorators import role_required
 from django.http import HttpResponse
+from django.db.models import Count, Q
+from django.utils import timezone
+from .governance import filter_audits, board_context, plan_start
 
 
 def get_user_role(user):
@@ -35,6 +38,7 @@ def login_view(request):
 
             if user is not None:
                 login(request, user)
+                request.session.set_expiry(30 * 24 * 60 * 60 if request.POST.get('remember_me') == '1' else 0)
                 return redirect('dashboard')
 
         messages.error(request, 'Email ou mot de passe incorrect.')
@@ -79,6 +83,18 @@ def dashboard(request):
         audits = Audit.objects.all()
         rapports = Rapport.objects.all()
 
+    today = timezone.localdate()
+    audits = filter_audits(request)
+    rapports = rapports.filter(audit__in=audits)
+    rapports = rapports.filter(audit__date_audit__lte=today)
+    responses = ChecklistResponse.objects.filter(rapport__in=rapports)
+    counts = responses.aggregate(
+        conformes=Count('pk', filter=Q(statut='CONFORME')),
+        non_conformes=Count('pk', filter=Q(statut='NON_CONFORME')),
+        abordables=Count('pk', filter=Q(statut='ABORDABLE')),
+    )
+    evaluated = counts['conformes'] + counts['non_conformes']
+    completed_ids = set(rapports.values_list('audit_id', flat=True))
     stats = {
         'total_audits': audits.count(),
         'audits_a_venir': audits.filter(date_audit__gte=datetime.now().date()).count(),
@@ -86,8 +102,37 @@ def dashboard(request):
         'total_rapports': rapports.count(),
         'total_users': User.objects.count(),
         'total_checklist': ChecklistItem.objects.filter(actif=True).count(),
+        **counts,
+        'conformite': round(counts['conformes'] * 100 / evaluated) if evaluated else None,
+        'controles': evaluated,
+        'sans_rapport': audits.filter(date_audit__lt=today).exclude(pk__in=completed_ids).count(),
     }
 
+    missions = list(audits.select_related('auditeur', 'client').order_by('-date_audit'))
+    for mission in missions:
+        mission.dashboard_state = 'Rapport disponible' if mission.pk in completed_ids else ('Planifié' if mission.date_audit >= today else 'Sans rapport')
+        mission.dashboard_tone = 'green' if mission.pk in completed_ids else ('blue' if mission.date_audit >= today else 'amber')
+    type_metrics = []
+    for code, label in Audit.TYPE_CHOICES:
+        group = responses.filter(rapport__audit__type_audit=code).aggregate(
+            ok=Count('pk', filter=Q(statut='CONFORME')),
+            ko=Count('pk', filter=Q(statut='NON_CONFORME')),
+        )
+        total = group['ok'] + group['ko']
+        type_metrics.append({'label': label.replace('Audit ', ''), 'score': round(group['ok'] * 100 / total) if total else None})
+    month_start = plan_start(request)
+    months = []
+    for offset in range(6):
+        index = month_start.month - 1 + offset
+        months.append(date(month_start.year + index // 12, index % 12 + 1, 1))
+    end_index = month_start.month - 1 + 6
+    plan_end = date(month_start.year + end_index // 12, end_index % 12 + 1, 1)
+    plan = audits.filter(Q(date_audit__gte=month_start) | Q(end_date__gte=month_start), date_audit__lt=plan_end).order_by('date_audit')[:6]
+    for mission in plan:
+        start = max(month_start, mission.date_audit)
+        mission.month_column = (start.year - month_start.year) * 12 + start.month - month_start.month + 1
+        end = mission.end_date or mission.date_audit
+        mission.month_span = max(1, min(7 - mission.month_column, (end.year - start.year) * 12 + end.month - start.month + 1))
     derniers_audits = audits.order_by('-created_at')[:5]
     derniers_rapports = rapports.order_by('-date_creation')[:5]
 
@@ -95,6 +140,13 @@ def dashboard(request):
         'stats': stats,
         'derniers_audits': derniers_audits,
         'derniers_rapports': derniers_rapports,
+        'missions': missions,
+        'type_metrics': type_metrics,
+        'months': months,
+        'plan': plan,
+        **board_context(request, audits),
+        'findings': responses.filter(statut='NON_CONFORME').select_related('item', 'rapport__audit', 'rapport__auteur')[:4],
+        'today': today,
     })
 
 

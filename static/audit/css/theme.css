@@ -1,0 +1,137 @@
+/* Shared command-center palette, including authentication and editing screens. */
+.audit-theme{--ink:#e5edf5;--muted:#a4b8c9;--line:#263e4c;--primary:#28d5b4;--panel:#0b1d29;--shadow:none;--shadow2:0 10px 30px #0003;color-scheme:dark;color:var(--ink);background:#06121c}
+.audit-theme .ui-icon{width:25px;height:25px;display:block;flex-shrink:0}
+.audit-theme .metric-icon .ui-icon{width:30px;height:30px}
+.audit-theme .sidebar{overflow-y:auto}
+.audit-theme .main{flex:1}
+.audit-theme :is(.toolbar,.panel,.stat-card,.data-card,.report-card,.hero-card,.form-card,.meta-box,.list-row,.check-result,.auth-card,.auth-panel,.calendar-grid-card,.calendar-legend,.checklist-card-pro){background:linear-gradient(125deg,#0d222e,#081722);border-color:var(--line);border-radius:8px;box-shadow:none;backdrop-filter:none}
+.audit-theme :is(.toolbar,.panel,.form-card){padding:22px}
+.audit-theme :is(.toolbar h2,.report-card h3,.stat-card strong,.meta-box span,.check-result strong,.pro-table strong,.auth-title,.calendar-hero-pro h2,.month-box strong){color:#f0f5fa;font-weight:650}
+.audit-theme :is(.toolbar h2,.hero-title){font-size:28px;letter-spacing:-.7px}
+.audit-theme :is(.toolbar p,.report-card p,.muted,.hero-text,.prose-content,.meta-box strong,.check-result small,.stat-card span,.stat-card em,.calendar-hero-pro p,.month-box span){color:var(--muted);font-weight:400}
+.audit-theme :is(.section-label,.eyebrow){color:#39d7bc}
+.audit-theme :is(.hero-card,.report-card,.calendar-hero-pro,.checklist-card-pro):after,.audit-theme .checklist-card-pro:before{display:none}
+.audit-theme :is(.btn-primary,.btn-secondary,.btn-small,.link-action){border-radius:5px;font-weight:600;box-shadow:none;font-size:13px}
+.audit-theme .btn-primary{background:linear-gradient(120deg,#f1d394,#d9ac5f);border:1px solid #f4d592;color:#211b0e}
+.audit-theme :is(.btn-secondary,.btn-small,.link-action,.user-chip,.month-nav a){background:#102734;border:1px solid #304c5c;color:#c7e2ee;border-radius:5px;box-shadow:none}
+.audit-theme :is(.btn-primary,.btn-secondary,.btn-small,.link-action,.data-card,.report-card,.stat-card,.list-row,.calendar-day-pro):hover{transform:none;box-shadow:none;filter:brightness(1.12)}
+.audit-theme :is(.badge-soft,.type-pill,.date-chip,.calendar-tag){background:#0c343d;border:1px solid #205766;color:#74e3d0;font-weight:500;letter-spacing:.03em;border-radius:5px}
+.audit-theme :is(.row-icon,.order-badge,.stat-ico,.auth-logo){background:#0d4549;border:1px solid #176367;color:#52e2c6;border-radius:7px;box-shadow:none}
+.audit-theme .pro-table th{background:#102431;border-color:var(--line);color:#aec1d0;font-weight:500;letter-spacing:.06em}
+.audit-theme .pro-table td{border-color:#1c3340;color:#c5d5e2;font-weight:400}
+.audit-theme .pro-table tbody tr:hover{background:#12313c}
+.audit-theme :is(.empty-state,.empty-card){background:#0a1c27;border-color:#345263;color:#a4b8c9;border-radius:7px}
+.audit-theme :is(.tw-form,.form-card) :is(input,select,textarea),.audit-theme textarea,.audit-theme .remark-input{background:#071722!important;border:1px solid #355161!important;color:#e1edf5!important;border-radius:6px!important;font-weight:400!important}
+.audit-theme :is(.tw-form label,.form-card label){color:#bdd0de;font-weight:500;letter-spacing:.05em}
+.audit-theme input::placeholder,.audit-theme textarea::placeholder{color:#8ba3b6}
+.audit-theme :is(a,button,input,select,textarea):focus-visible{outline:2px solid #40dfc2;outline-offset:3px}
+.audit-theme :is(.tw-form,.form-card) :is(input,select,textarea):focus{border-color:#28c8ad!important;box-shadow:0 0 0 3px #28c8ad20}
+.audit-theme .progress-mini{background:#203644}
+.audit-theme .progress-mini span{background:linear-gradient(90deg,#18b599,#38d8b2)}
+.audit-theme .score-orb{background:linear-gradient(135deg,#0b514f,#102f41);border:1px solid #247265;box-shadow:none;border-radius:12px;color:#53e2c1}
+.audit-theme .calendar-hero-pro,.audit-theme .checklist-topbar{background:linear-gradient(120deg,#102e3b,#091c28);border:1px solid var(--line);border-radius:8px;box-shadow:none}
+.audit-theme .calendar-hero-pro:after{display:none}
+.audit-theme .month-box{background:#091d29;border:1px solid #294958;border-radius:7px;box-shadow:none}
+.audit-theme .calendar-weekdays div,.audit-theme .calendar-day-pro{background:#0b202d;border-color:#263e4c;border-radius:6px;color:#b7cad8}
+.audit-theme .calendar-day-pro.muted-day{background:#07141d;opacity:.6}
+.audit-theme .calendar-day-pro.busy-day{background:#0c3039;border-color:#27645f}
+.audit-theme .calendar-day-pro.today-day{border-color:#37d9b7;box-shadow:0 0 0 2px #25c9a920}
+.audit-theme .day-head span{background:#183440;color:#d6e8f1;border-radius:5px}
+.audit-theme .day-head em{background:#10493f;color:#68e5c6}
+.audit-theme .event-pill{background:#102b38;border-color:#285467;border-radius:5px}
+.audit-theme .event-pill:hover{background:#173c46}
+.audit-theme .event-pill strong{color:#75e5ce}
+.audit-theme .event-pill small,.audit-theme .calendar-legend{color:#b6cad8}
+.audit-theme :is(.check-result.ok,.state-pill.state-conforme){background:#0d302b;color:#6be3ba;border-color:#246c58}
+.audit-theme :is(.check-result.ko,.state-pill.state-non){background:#341e2a;color:#ff99a7;border-color:#76404d}
+.audit-theme :is(.check-result.warn,.state-pill.state-abordable){background:#322e21;color:#f1d080;border-color:#776236}
+.audit-theme .state-pill{border-radius:7px;box-shadow:none!important}
+.audit-theme .state-input:checked+.state-pill.state-conforme{background:#15533f;color:#a5f3cc;border-color:#46daaa}
+.audit-theme .state-input:checked+.state-pill.state-non{background:#582737;color:#ffc0cb;border-color:#fc8399}
+.audit-theme .state-input:checked+.state-pill.state-abordable{background:#514221;color:#ffe4a4;border-color:#f2c562}
+.audit-theme .state-input:focus-visible+.state-pill{outline:2px solid #e4f6ff;outline-offset:3px}
+.audit-theme :is(.checklist-premium-panel,.checklist-card,.mini-metric,.sticky-actions){background:#0b202c;border:1px solid #29424f;border-radius:8px;box-shadow:none}
+.audit-theme :is(.check-title,.mini-metric strong){color:#e4eef6;font-weight:600}
+.audit-theme .mini-metric span{color:#a5bbce}
+.audit-theme .checklist-card:hover{border-color:#367d73;box-shadow:none}
+.audit-theme input[type=radio],.audit-theme input[type=checkbox]{accent-color:#29d1af}
+.audit-theme .board-header-filters{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.audit-theme :is(.board-header-filters,.command-panel-head,.workspace-filters) select,.audit-theme .workspace-filters input:not([type=checkbox]){background:#0c202c;color:#c8d9e7;border:1px solid #304958;border-radius:5px;padding:9px 10px;font-size:11px;max-width:210px}
+.audit-theme .header-search{display:flex;align-items:center;gap:7px;background:#071924;border:1px solid #304958;border-radius:5px;padding:8px 10px}
+.audit-theme .header-search input{min-width:0;width:175px;background:transparent;border:0;color:#dfebf3;font-size:11px;outline:0}
+.audit-theme .header-search:focus-within{outline:2px solid #27cbb1}
+.audit-theme kbd{background:#192e3d;border:1px solid #2c4758;border-radius:3px;padding:1px 4px;font-size:9px;color:#9bb2c5;white-space:nowrap}
+.audit-theme .topbar{flex-wrap:wrap;gap:12px;position:relative;z-index:20}
+.audit-theme .notification-menu{position:relative}
+.audit-theme .notification-menu summary{list-style:none;cursor:pointer;position:relative;padding:7px}
+.audit-theme .notification-menu summary::-webkit-details-marker{display:none}
+.audit-theme .notification-menu summary>span{position:absolute;top:0;right:0;border-radius:20px;background:#ec425d;color:white;font-size:9px;padding:1px 4px}
+.audit-theme .notification-popover{position:absolute;right:0;top:45px;width:min(320px,85vw);background:#102632;border:1px solid #345565;border-radius:8px;box-shadow:0 15px 35px #0008;padding:15px;z-index:50}
+.audit-theme .notification-popover h2{font-size:15px;margin-bottom:10px}
+.audit-theme .notification-popover a{display:block;border-top:1px solid #2b4452;padding:10px 0;font-size:12px}
+.audit-theme .notification-popover small{display:block;color:#a6bed0;margin-top:5px}
+.audit-theme .metric-trend{margin-left:10px;font-size:15px}
+.audit-theme .lifecycle{grid-template-columns:.85fr repeat(5,minmax(0,1fr));gap:22px}
+.audit-theme .cycle-step{gap:8px;padding:12px 9px}
+.audit-theme .cycle-step h3{font-size:11px;white-space:nowrap}
+.audit-theme .step-number{width:28px;height:28px}
+.audit-theme .cycle-step:nth-child(4) .step-number{color:#edc66c;border-color:#b99744;background:#51412055}
+.audit-theme .cycle-step:nth-child(5) .step-number{color:#55b9ff;border-color:#328bcf;background:#173c6655}
+.audit-theme .cycle-step:last-child .step-number{color:#bdd5eb;border-color:#8ba9bf;background:#24405355}
+.audit-theme .risk-chart-layout{display:grid;grid-template-columns:minmax(0,1fr) 105px;gap:7px;align-items:center}
+.audit-theme .risk-chart{width:100%;min-height:235px;overflow:visible}
+.audit-theme .risk-chart text{fill:#b3c8d8;font-size:10px}
+.audit-theme .risk-bubble{fill:currentColor;fill-opacity:.6;stroke:currentColor;stroke-width:1.3}
+.audit-theme .risk-bubble:hover{fill-opacity:.9;stroke-width:3}
+.audit-theme .CRITICAL{color:#fa4f67}.audit-theme .HIGH{color:#ff882f}.audit-theme .MEDIUM{color:#f4c443}.audit-theme .LOW{color:#31d0a0}
+.audit-theme .risk-legend{display:grid;gap:20px;font-size:10px}
+.audit-theme .risk-legend>div{display:flex;align-items:center;gap:7px}
+.audit-theme .risk-legend strong{margin-left:auto;font-weight:500}
+.audit-theme .risk-legend p{font-size:9px}
+.audit-theme .risk-legend a,.audit-theme .panel-link{color:#55d9c4;font-size:10px}
+.audit-theme .risk-empty{text-align:center;font-size:11px}
+.audit-theme .corrective-row .action-due{flex:0 0 auto;display:grid;gap:7px;justify-items:start;font-size:10px;max-width:115px}
+.audit-theme .corrective-row .action-owner{padding-top:8px}
+.audit-theme .corrective-row h3{max-width:190px}
+.audit-theme .table-progress{display:flex;align-items:center;gap:9px;font-size:10px}
+.audit-theme .table-progress .track{width:80px}
+.audit-theme .domain-heading{margin-top:24px;border-top:1px solid #29424f;padding-top:15px}
+.audit-theme .export-button{font-size:10px;padding:8px 10px}
+.audit-theme .workspace-filters{display:flex;align-items:end;gap:14px;flex-wrap:wrap;margin:0 0 20px}
+.audit-theme .workspace-filters label{display:grid;gap:6px;font-size:12px;color:#a5bbce}
+.audit-theme .workspace-filters .checkbox-label{display:flex;align-items:center;padding-bottom:9px}
+.audit-theme .workspace-table{font-size:12px;min-width:650px}
+.audit-theme .workspace-table td{white-space:normal;vertical-align:top;padding:16px}
+.audit-theme .workspace-table td:first-child{max-width:420px}
+.audit-theme .workspace-table p{margin-top:8px;font-size:11px}
+.audit-theme .workspace-table .btn-small{margin:0 6px 6px 0;font-size:11px}
+.audit-theme .workspace-settings{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.audit-theme .workspace-settings .form-grid{margin-top:20px}
+.audit-theme .settings-links{display:grid;gap:12px;margin-top:20px}
+.audit-theme .form-card input[type=checkbox]{width:auto}
+.audit-theme .form-card select[multiple]{min-height:140px}
+.audit-theme .mission-detail-links{display:flex;flex-wrap:wrap}
+.audit-theme .nav{gap:3px}.audit-theme .nav-link{padding-top:7px;padding-bottom:7px}
+@media(min-width:1450px){.audit-theme .topbar{flex-wrap:nowrap}.audit-theme .page-title{font-size:23px}.audit-theme .command-header-actions{gap:9px}.audit-theme .board-header-filters select{max-width:170px}}
+@media(max-width:1400px){.audit-theme .lifecycle{grid-template-columns:repeat(5,minmax(0,1fr))}.audit-theme .cycle-intro{grid-column:1/-1;display:flex;justify-content:space-between}.audit-theme .cycle-intro br{display:none}.audit-theme .cycle-step{gap:6px}.audit-theme .cycle-step h3{white-space:normal}.audit-theme .command-header-actions{flex-wrap:wrap}}
+@media(max-width:1000px){.audit-theme .lifecycle{grid-template-columns:repeat(3,minmax(0,1fr))}.audit-theme .cycle-step:after{display:none}}
+@media(max-width:767px){.audit-theme .lifecycle{grid-template-columns:1fr}.audit-theme .workspace-settings{grid-template-columns:1fr}.audit-theme .header-search{flex:1}.audit-theme .header-search input{width:100%}.audit-theme .board-header-filters{width:100%}.audit-theme .command-header-actions{width:100%}.audit-theme .board-header-filters select{max-width:100%;flex:1}.audit-theme .dashboard-tabs{overflow:auto;max-width:100%;gap:16px}.audit-theme .dashboard-tabs button{white-space:nowrap}.audit-theme .risk-chart-layout{grid-template-columns:minmax(0,1fr) 105px}.audit-theme .metric-card strong{font-size:28px}.audit-theme .metric-trend{font-size:11px}}
+/* Existing utility-based detail screens share the same semantic surfaces. */
+.audit-theme :is([class~="bg-white"],[class~="bg-white/90"],[class~="bg-slate-50"],[class~="bg-slate-50/80"],[class~="bg-slate-50/70"],[class~="bg-blue-50/70"]){background:#0d222f;border-color:#29424f;border-radius:8px}
+.audit-theme :is(.text-slate-950,.text-slate-900,.text-slate-800,.text-slate-700){color:#e0eaf3}
+.audit-theme :is(.text-slate-600,.text-slate-500){color:#a5bbce}
+.audit-theme :is(.text-blue-700,.text-blue-600){color:#54d7c0}
+.audit-theme :is(.text-red-700,.text-red-600){color:#ff8f9f}
+.audit-theme :is(.text-emerald-700,.text-green-700){color:#70e2b6}
+.audit-theme :is(.border-slate-100,.border-slate-200,.border-blue-100){border-color:#29424f}
+.audit-theme .hover\:bg-slate-50:hover{background:#15313d}
+.audit-theme .from-emerald-600{--tw-gradient-from:#0b514f;--tw-gradient-to:#0b514f00}
+.audit-theme .to-blue-600{--tw-gradient-to:#102f41}
+.audit-theme.auth-bg{background:radial-gradient(ellipse at 20% 25%,#104b4d55,transparent 55%),#06121c}
+.audit-theme .auth-card{border-color:#2b4857}
+.audit-theme .auth-panel{border-radius:0}
+.audit-theme .auth-title{font-size:36px}
+.audit-theme .feature-pill{background:#0c263080;border-color:#294856;border-radius:8px}
+.audit-theme .feature-dot{background:#30d2b0;box-shadow:0 0 0 5px #30d2b015}
+@media(max-width:767px){.audit-theme :is(.toolbar,.panel,.form-card,.calendar-hero-pro){padding:16px}.audit-theme .calendar-hero-pro h2{font-size:28px}.audit-theme .month-box{min-width:0;width:100%}.audit-theme .check-options{grid-template-columns:1fr}.audit-theme .auth-panel{padding:25px}.audit-theme .hero-title{font-size:26px}}
+@media(prefers-reduced-motion:reduce){.audit-theme *{animation:none!important;transition:none!important;opacity:1!important;transform:none!important;scroll-behavior:auto!important}}

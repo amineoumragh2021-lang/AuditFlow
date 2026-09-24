@@ -8,9 +8,12 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'audit/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'audit/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'audit/css/theme.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 
-<body class="app-bg">
+<body class="app-bg audit-theme command-center {% block body_class %}{% endblock %}">
 
 <div class="shell">
 
@@ -21,10 +24,10 @@
     <aside class="sidebar">
 
         <a href="{% url 'dashboard' %}" class="brand">
-            <div class="brand-logo pulse-soft">AF</div>
+            <div class="brand-logo">A</div>
 
             <div>
-                <div class="brand-title">AuditFlow</div>
+                <div class="brand-title">Audit<span>Flow</span></div>
                 <div class="brand-sub">PFA Industrial</div>
             </div>
         </a>
@@ -33,42 +36,48 @@
 
             <a href="{% url 'dashboard' %}"
                class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}nav-active{% endif %}">
-                <span class="nav-ico">D</span>
+                <span class="nav-ico" aria-hidden="true">{% include "audit/icon.html" with name="home" %}</span>
                 <span>Tableau de bord</span>
             </a>
 
             <a href="{% url 'audits_list' %}"
-               class="nav-link {% if 'audit' in request.resolver_match.url_name %}nav-active{% endif %}">
-                <span class="nav-ico">A</span>
-                <span>Audits</span>
+               class="nav-link {% if request.resolver_match.url_name == 'audits_list' or request.resolver_match.url_name == 'audit_detail' or request.resolver_match.url_name == 'audit_create' or request.resolver_match.url_name == 'audit_update' %}nav-active{% endif %}">
+                <span class="nav-ico" aria-hidden="true">{% include "audit/icon.html" with name="file" %}</span>
+                <span>Missions</span>
             </a>
 
             <a href="{% url 'calendar' %}"
                class="nav-link {% if request.resolver_match.url_name == 'calendar' %}nav-active{% endif %}">
-                <span class="nav-ico">📅</span>
+                <span class="nav-ico" aria-hidden="true">{% include "audit/icon.html" with name="calendar" %}</span>
                 <span>Calendrier</span>
             </a>
 
             <a href="{% url 'rapports_list' %}"
                class="nav-link {% if 'rapport' in request.resolver_match.url_name %}nav-active{% endif %}">
-                <span class="nav-ico">R</span>
+                <span class="nav-ico" aria-hidden="true">{% include "audit/icon.html" with name="file" %}</span>
                 <span>Rapports</span>
             </a>
 
             {% if user.profile.role == 'RESPONSABLE' %}
             <a href="{% url 'checklist_list' %}"
                class="nav-link {% if 'checklist' in request.resolver_match.url_name %}nav-active{% endif %}">
-                <span class="nav-ico">C</span>
+                <span class="nav-ico" aria-hidden="true">{% include "audit/icon.html" with name="check" %}</span>
                 <span>Checklists</span>
             </a>
 
             <a href="{% url 'users_list' %}"
                class="nav-link {% if 'user' in request.resolver_match.url_name %}nav-active{% endif %}">
-                <span class="nav-ico">U</span>
+                <span class="nav-ico" aria-hidden="true">{% include "audit/icon.html" with name="users" %}</span>
                 <span>Utilisateurs</span>
             </a>
             {% endif %}
 
+
+            <a href="{% url 'governance_list' 'findings' %}" class="nav-link {% if request.resolver_match.kwargs.kind == 'findings' %}nav-active{% endif %}"><span class="nav-ico">{% include 'audit/icon.html' with name='alert' %}</span><span>Constats</span></a>
+            <a href="{% url 'governance_list' 'risks' %}" class="nav-link {% if request.resolver_match.kwargs.kind == 'risks' %}nav-active{% endif %}"><span class="nav-ico">{% include 'audit/icon.html' with name='shield' %}</span><span>Risques</span></a>
+            <a href="{% url 'governance_list' 'actions' %}" class="nav-link {% if request.resolver_match.kwargs.kind == 'actions' %}nav-active{% endif %}"><span class="nav-ico">{% include 'audit/icon.html' with name='check' %}</span><span>Actions correctives</span></a>
+            <a href="{% url 'governance_list' 'documents' %}" class="nav-link {% if request.resolver_match.kwargs.kind == 'documents' %}nav-active{% endif %}"><span class="nav-ico">{% include 'audit/icon.html' with name='file' %}</span><span>Documents</span></a>
+            <a href="{% url 'workspace_settings' %}" class="nav-link {% if request.resolver_match.url_name == 'workspace_settings' %}nav-active{% endif %}"><span class="nav-ico">{% include 'audit/icon.html' with name='settings' %}</span><span>Paramètres</span></a>
         </nav>
 
         <div class="mt-8 rounded-[24px] border border-white/10 bg-white/[.06] p-5">
@@ -123,7 +132,7 @@
             <div>
 
                 <p class="eyebrow">
-                    Gestion numérique des audits
+                    {% block eyebrow %}Gestion numérique des audits{% endblock %}
                 </p>
 
                 <h1 class="page-title">
@@ -134,7 +143,7 @@
 
             </div>
 
-            <div class="flex flex-wrap items-center gap-3">
+            {% block header_actions %}<div class="flex flex-wrap items-center gap-3">
 
                 <div class="user-chip">
                     <span class="online-dot"></span>
@@ -145,11 +154,16 @@
                     Quitter
                 </a>
 
-            </div>
+            </div>{% endblock %}
 
         </header>
 
         <div class="mobile-nav fade-up delay-1">
+            <a href="{% url 'governance_list' 'findings' %}" class="mobile-tab">Constats</a>
+            <a href="{% url 'governance_list' 'risks' %}" class="mobile-tab">Risques</a>
+            <a href="{% url 'governance_list' 'actions' %}" class="mobile-tab">Actions</a>
+            <a href="{% url 'governance_list' 'documents' %}" class="mobile-tab">Documents</a>
+            <a href="{% url 'workspace_settings' %}" class="mobile-tab">Paramètres</a>
 
             <a href="{% url 'dashboard' %}" class="mobile-tab">
                 Dashboard
@@ -212,6 +226,7 @@
 </div>
 
 <script src="{% static 'audit/js/app.js' %}"></script>
+{% block extra_js %}{% endblock %}
 
 </body>
 </html>

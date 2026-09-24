@@ -30,8 +30,9 @@
             {% for audit in audits %}
                 <tr>
                     <td>
-                        <strong>{{ audit.titre }}</strong>
+                        <strong><a href="{% url 'audit_detail' audit.pk %}">{{ audit.titre }}</a></strong>
                         <small>{{ audit.description|truncatechars:72 }}</small>
+                        <small>{{ audit.get_stage_display }} · {{ audit.progress }}% · {{ audit.get_priority_display }}</small>
                     </td>
                     <td><span class="type-pill">{{ audit.get_type_audit_display }}</span></td>
                     <td>{{ audit.date_audit }}</td>

@@ -1,0 +1,9 @@
+<div class="command-header-actions">
+<form method="get" class="board-header-filters">
+<label class="sr-only" for="organisation-filter">Organisation</label><select name="org" id="organisation-filter"><option value="">Toutes les organisations</option>{% for org in organisations %}<option value="{{ org.pk }}" {% if request.GET.org == org.pk|stringformat:'s' %}selected{% endif %}>{{ org.nom }}</option>{% endfor %}</select>
+<label class="header-search"><span aria-hidden="true">⌕</span><input name="q" value="{{ request.GET.q }}" placeholder="Missions, constats, personnes…" aria-label="Recherche globale"><kbd>Ctrl K</kbd></label>
+<label class="sr-only" for="quarter-filter">Trimestre</label><select name="quarter" id="quarter-filter"><option value="">Toutes les périodes</option>{% for quarter in quarter_choices %}<option {% if request.GET.quarter == quarter %}selected{% endif %}>{{ quarter }}</option>{% endfor %}</select><button class="icon-button" title="Appliquer les filtres" aria-label="Appliquer les filtres">→</button>
+</form>
+<details class="notification-menu"><summary aria-label="Notifications : {{ notification_count }} actions en retard">{% include 'audit/icon.html' with name='bell' %}<span>{{ notification_count }}</span></summary><div class="notification-popover"><h2>Notifications</h2>{% for action in notifications %}<a href="{% url 'governance_list' 'actions' %}?overdue=1"><strong>{{ action.titre }}</strong><small>{{ action.overdue_days }} jours de retard · {{ action.audit.titre }}</small></a>{% empty %}<p>Aucune action en retard.</p>{% endfor %}</div></details>
+<a class="profile-avatar" href="{% url 'workspace_settings' %}" aria-label="Mon profil">{{ user.first_name|first|default:user.username|first|upper }}</a>
+</div>

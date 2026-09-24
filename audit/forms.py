@@ -106,7 +106,7 @@ class RegisterForm(forms.ModelForm):
 class AuditForm(forms.ModelForm):
     class Meta:
         model = Audit
-        fields = ['titre', 'type_audit', 'date_audit', 'client', 'auditeur', 'description']
+        fields = ['titre', 'type_audit', 'organisation', 'department', 'date_audit', 'end_date', 'stage', 'progress', 'priority', 'client', 'auditeur', 'description']
         labels = {
             'titre': 'Titre de l’audit',
             'type_audit': 'Type d’audit',
@@ -117,6 +117,7 @@ class AuditForm(forms.ModelForm):
         }
         widgets = {
             'date_audit': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Objectif ou description de l’audit...'}),
             'titre': forms.TextInput(attrs={'placeholder': 'Exemple : Audit qualité ligne production'}),
         }
@@ -127,6 +128,15 @@ class AuditForm(forms.ModelForm):
         self.fields['auditeur'].empty_label = 'Choisir un auditeur'
         self.fields['client'].queryset = User.objects.filter(profile__role='CLIENT')
         self.fields['client'].empty_label = 'Choisir un client'
+
+    def clean(self):
+        data = super().clean()
+        department = data.get('department')
+        if department and department.organisation_id != getattr(data.get('organisation'), 'pk', None):
+            self.add_error('department', 'Choisissez un département de cette organisation.')
+        if data.get('end_date') and data.get('date_audit') and data['end_date'] < data['date_audit']:
+            self.add_error('end_date', 'L’échéance doit suivre la date de début.')
+        return data
 
 
 class RapportForm(forms.ModelForm):

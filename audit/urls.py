@@ -1,7 +1,14 @@
 from django.urls import path
 from . import views
+from . import governance
 
 urlpatterns = [
+    path('workspace/settings/', governance.settings_view, name='workspace_settings'),
+    path('workspace/export/', governance.export_missions, name='export_missions'),
+    path('workspace/documents/<int:pk>/download/', governance.download_document, name='download_document'),
+    path('workspace/<str:kind>/', governance.module_list, name='governance_list'),
+    path('workspace/<str:kind>/add/', governance.module_edit, name='governance_create'),
+    path('workspace/<str:kind>/<int:pk>/edit/', governance.module_edit, name='governance_edit'),
     path('', views.dashboard, name='dashboard'),
 
     path('audits/', views.audits_list, name='audits_list'),

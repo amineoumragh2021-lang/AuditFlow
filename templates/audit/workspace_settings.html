@@ -1,0 +1,6 @@
+{% extends 'audit/base.html' %}
+{% block page_title %}Paramètres{% endblock %}
+{% block content %}
+<div class="workspace-settings"><section class="form-card"><h2>Mon profil</h2><p class="muted">{{ user.email }} · {{ user.profile.get_role_display }}</p><form method="post" class="form-grid">{% csrf_token %}{{ form.as_p }}<button class="btn-primary">Enregistrer</button></form></section>
+{% if user.profile.role == 'RESPONSABLE' %}<section class="command-panel"><h2>Structure de l’organisation</h2><p>Créez vos organisations et départements, puis associez-les aux missions pour activer les filtres et la conformité par département.</p><div class="settings-links"><a class="btn-secondary" href="{% url 'governance_list' 'organisations' %}">Organisations →</a><a class="btn-secondary" href="{% url 'governance_list' 'departments' %}">Départements →</a><a class="btn-secondary" href="{% url 'users_list' %}">Utilisateurs →</a></div></section>{% endif %}</div>
+{% endblock %}

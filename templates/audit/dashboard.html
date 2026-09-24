@@ -1,84 +1,21 @@
 {% extends 'audit/base.html' %}
-{% block title %}Tableau de bord{% endblock %}
-{% block page_title %}Tableau de bord{% endblock %}
+{% load static %}
+{% block title %}Centre de gouvernance | AuditFlow{% endblock %}
+{% block eyebrow %}Une vision complète de votre univers d’audit{% endblock %}
+{% block page_title %}Centre de gouvernance{% endblock %}
+{% block header_actions %}{% include 'audit/board_header.html' %}{% endblock %}
 {% block content %}
-<div class="hero-card fade-up">
-    <div class="relative z-10">
-        <span class="badge-soft">Vue générale</span>
-        <h2 class="hero-title mt-5">Bienvenue dans votre espace d'audit</h2>
-        <p class="hero-text">Suivez les audits planifiés, les rapports déposés, les checklists actives et l’état global du processus d’audit industriel depuis une interface claire et moderne.</p>
-        <div class="mt-6">
-            <a href="{% url 'audits_list' %}" class="btn-primary">Voir les audits</a>
-            <a href="{% url 'calendar' %}" class="btn-secondary" style="margin-left:10px;">Calendrier</a>
-        </div>
-    </div>
+<div class="command-dashboard">
+<div class="metric-grid">
+<a class="metric-card" href="{% url 'audits_list' %}"><span class="metric-icon green">{% include 'audit/icon.html' with name='file' %}</span><div><h2>Audits actifs</h2><strong>{{ active_audits }}</strong>{% if audit_trend != None %}<span class="metric-trend {% if audit_trend < 0 %}red{% else %}green{% endif %}" title="90 derniers jours comparés aux 90 précédents, toutes missions visibles">{{ audit_trend }}%</span>{% endif %}<p>{{ stats.audits_a_venir }} à venir · {{ stats.audits_realises }} avec rapport</p></div><span class="mini-bars green" aria-hidden="true">▂▃▂▅▆▇</span></a>
+<a class="metric-card" href="{% url 'governance_list' 'findings' %}"><span class="metric-icon red">{% include 'audit/icon.html' with name='alert' %}</span><div><h2>Constats critiques ouverts</h2><strong>{{ critical_findings }}</strong><p>Sur {{ finding_total }} constats enregistrés</p></div><span class="mini-bars red" aria-hidden="true">▂▅▃▆▇▅</span></a>
+<a class="metric-card" href="#compliance"><span class="metric-icon green">{% include 'audit/icon.html' with name='shield' %}</span><div><h2>Taux de conformité</h2><strong>{% if stats.conformite != None %}{{ stats.conformite }}<small>%</small>{% else %}—{% endif %}</strong><p>{{ stats.conformes }} conformes · {{ stats.non_conformes }} non conformes</p></div><span class="mini-bars green" aria-hidden="true">▂▃▄▅▆▇</span></a>
+<a class="metric-card" href="{% url 'governance_list' 'actions' %}?overdue=1"><span class="metric-icon red">{% include 'audit/icon.html' with name='clock' %}</span><div><h2>Actions en retard</h2><strong>{{ overdue_actions }}</strong><p>Sur {{ open_actions }} actions ouvertes</p></div><span class="mini-bars red" aria-hidden="true">▂▂▄▃▅▆</span></a>
 </div>
-
-<div class="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-    <div class="stat-card shimmer reveal-card"><div class="stat-top"><span>Total audits</span><div class="stat-ico">A</div></div><strong>{{ stats.total_audits }}</strong><em>Tous les audits visibles selon votre rôle</em></div>
-    <div class="stat-card shimmer reveal-card"><div class="stat-top"><span>À venir</span><div class="stat-ico">📅</div></div><strong>{{ stats.audits_a_venir }}</strong><em>Audits programmés dans le calendrier</em></div>
-    <div class="stat-card shimmer reveal-card"><div class="stat-top"><span>Réalisés</span><div class="stat-ico">✓</div></div><strong>{{ stats.audits_realises }}</strong><em>Audits avec rapport enregistré</em></div>
-    <div class="stat-card shimmer reveal-card"><div class="stat-top"><span>Rapports</span><div class="stat-ico">R</div></div><strong>{{ stats.total_rapports }}</strong><em>Rapports enregistrés</em></div>
-</div>
-
-<div class="mt-6 grid gap-6 xl:grid-cols-[1.35fr_.65fr]">
-    <div class="panel-lg reveal-card">
-        <div class="panel-head">
-            <div><span class="section-label">Planification récente</span><h3>Derniers audits</h3></div>
-            <a href="{% url 'audits_list' %}" class="link-action">Voir tout</a>
-        </div>
-        <div class="space-y-3">
-            {% for audit in derniers_audits %}
-                <div class="list-row">
-                    <div class="row-icon">{{ audit.get_type_audit_display|first }}</div>
-                    <div class="min-w-0 flex-1">
-                        <strong>{{ audit.titre }}</strong>
-                        <small>{{ audit.get_type_audit_display }} • {{ audit.date_audit }} • Client : {% if audit.client %}{{ audit.client.get_full_name|default:audit.client.username }}{% else %}Non affecté{% endif %}</small>
-                    </div>
-                    <span class="date-chip">{{ audit.date_audit|date:"d/m/Y" }}</span>
-                </div>
-            {% empty %}
-                <p class="empty-state">Aucun audit disponible.</p>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div class="space-y-6">
-        <div class="panel reveal-card">
-            <div class="panel-head"><div><span class="section-label">Indicateurs</span><h3>Résumé rapide</h3></div></div>
-            <div class="grid gap-3">
-                <div class="mini-metric"><strong>{{ stats.total_checklist }}</strong><span>Points checklist actifs</span></div>
-                <div class="mini-metric"><strong>{{ stats.audits_a_venir }}</strong><span>Audits à venir</span></div>
-                <div class="mini-metric"><strong>{{ stats.total_users }}</strong><span>Utilisateurs</span></div>
-            </div>
-        </div>
-        <div class="panel reveal-card">
-            <div class="panel-head"><div><span class="section-label">Processus</span><h3>Cycle d'audit</h3></div></div>
-            <div class="timeline">
-                <div class="timeline-item"><strong>Planifier</strong><p class="muted">Le responsable crée l'audit et affecte les utilisateurs.</p></div>
-                <div class="timeline-item"><strong>Contrôler</strong><p class="muted">L'auditeur vérifie les points de checklist.</p></div>
-                <div class="timeline-item"><strong>Rapporter</strong><p class="muted">Le rapport est partagé au client concerné.</p></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="mt-6 panel-lg reveal-card">
-    <div class="panel-head">
-        <div><span class="section-label">Rapports récents</span><h3>Derniers rapports d'audit</h3></div>
-        <a href="{% url 'rapports_list' %}" class="link-action">Ouvrir</a>
-    </div>
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {% for rapport in derniers_rapports %}
-            <a href="{% url 'rapport_detail' rapport.id %}" class="data-card">
-                <span class="badge-soft">Score {{ rapport.checklist_score }}%</span>
-                <h4 class="mt-4 text-lg font-black tracking-tight text-slate-950">{{ rapport.audit.titre }}</h4>
-                <p class="muted mt-2">{{ rapport.contenu|truncatechars:110 }}</p>
-                <div class="progress-mini mt-4"><span style="width: {{ rapport.checklist_score }}%"></span></div>
-            </a>
-        {% empty %}
-            <p class="empty-card md:col-span-2 xl:col-span-3">Aucun rapport disponible.</p>
-        {% endfor %}
-    </div>
+<section class="command-panel lifecycle" aria-labelledby="cycle-title"><div class="cycle-intro"><h2 id="cycle-title">Cycle d’audit</h2><p>Progression de l’ensemble<br>des missions</p></div>{% for step in lifecycle %}<div class="cycle-step"><span class="step-number">{{ forloop.counter }}</span><div><h3>{{ step.label }}</h3><p><span>{{ step.count }} audits</span><span>{{ step.percent }}%</span></p><div class="track"><span style="width:{{ step.percent }}%"></span></div></div></div>{% endfor %}</section>
+{% include 'audit/board_insights.html' %}
+{% include 'audit/board_missions.html' %}
+<footer class="dashboard-footer"><span><i class="dot green"></i> AuditFlow · Gouvernance et assurance</span><span>Données de votre espace · {% now 'Y' %}</span></footer>
 </div>
 {% endblock %}
+{% block extra_js %}<script src="{% static 'audit/js/dashboard.js' %}"></script>{% endblock %}

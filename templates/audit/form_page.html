@@ -11,8 +11,9 @@
 </div>
 
 <div class="form-card reveal-card">
-    <form method="post" class="form-grid">
+    <form method="post" enctype="multipart/form-data" class="form-grid">
         {% csrf_token %}
+        {{ form.non_field_errors }}
         {% for field in form %}
             <div class="{% if field.field.widget.input_type == 'textarea' or field.name == 'description' or field.name == 'contenu' %}field-full{% endif %}">
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>

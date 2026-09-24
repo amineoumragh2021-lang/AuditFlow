@@ -1,5 +1,28 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
+
+
+PRIORITIES = [('CRITICAL', 'Critique'), ('HIGH', 'Élevé'), ('MEDIUM', 'Modéré'), ('LOW', 'Faible')]
+
+
+class Organisation(models.Model):
+    nom = models.CharField('Nom', max_length=150, unique=True)
+
+    def __str__(self):
+        return self.nom
+
+
+class Department(models.Model):
+    nom = models.CharField('Nom', max_length=100)
+    organisation = models.ForeignKey(Organisation, on_delete=models.PROTECT, verbose_name='Organisation')
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['organisation', 'nom'], name='department_name_per_org')]
+
+    def __str__(self):
+        return f'{self.organisation} · {self.nom}'
 
 
 class Profile(models.Model):
@@ -18,6 +41,13 @@ class Profile(models.Model):
 
 
 class Audit(models.Model):
+    STAGES = [('PLANNING', 'Planification'), ('FIELDWORK', 'Travaux terrain'), ('REVIEW', 'Revue'), ('REPORTING', 'Rapport'), ('CLOSED', 'Clôture')]
+    organisation = models.ForeignKey(Organisation, on_delete=models.PROTECT, null=True, blank=True, verbose_name='Organisation')
+    department = models.ForeignKey(Department, on_delete=models.PROTECT, null=True, blank=True, verbose_name='Département')
+    stage = models.CharField('Étape', max_length=20, choices=STAGES, default='PLANNING')
+    progress = models.PositiveSmallIntegerField('Progression (%)', default=0, validators=[MaxValueValidator(100)])
+    priority = models.CharField('Risque', max_length=10, choices=PRIORITIES, default='MEDIUM')
+    end_date = models.DateField('Échéance', null=True, blank=True)
     TYPE_CHOICES = [
         ('QUALITE', 'Audit qualité'),
         ('SECURITE', 'Audit sécurité'),
@@ -126,3 +156,72 @@ class ChecklistResponse(models.Model):
         else:
             etat = 'Abordable'
         return f"{self.item.texte} : {etat}"
+
+
+class Finding(models.Model):
+    audit = models.ForeignKey(Audit, on_delete=models.CASCADE, related_name='findings', verbose_name='Mission')
+    titre = models.CharField('Constat', max_length=200)
+    description = models.TextField('Description', blank=True)
+    priority = models.CharField('Gravité', max_length=10, choices=PRIORITIES, default='MEDIUM')
+    resolved = models.BooleanField('Résolu', default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titre
+
+
+class Risk(models.Model):
+    audit = models.ForeignKey(Audit, on_delete=models.CASCADE, related_name='risks', verbose_name='Mission')
+    titre = models.CharField('Risque', max_length=200)
+    description = models.TextField('Description', blank=True)
+    impact = models.PositiveSmallIntegerField('Impact (1–5)', default=3, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    likelihood = models.PositiveSmallIntegerField('Probabilité (1–5)', default=3, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    findings = models.ManyToManyField(Finding, blank=True, verbose_name='Constats associés')
+
+    @property
+    def priority(self):
+        score = self.impact * self.likelihood
+        return 'CRITICAL' if score >= 20 else 'HIGH' if score >= 12 else 'MEDIUM' if score >= 6 else 'LOW'
+
+    def get_priority_display(self):
+        return dict(PRIORITIES)[self.priority]
+
+    def __str__(self):
+        return self.titre
+
+
+class CorrectiveAction(models.Model):
+    STATES = [('OPEN', 'Ouverte'), ('IN_PROGRESS', 'En cours'), ('EVIDENCE', 'Preuve attendue'), ('COMPLETED', 'Terminée')]
+    audit = models.ForeignKey(Audit, on_delete=models.CASCADE, related_name='actions', verbose_name='Mission')
+    finding = models.ForeignKey(Finding, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Constat associé')
+    titre = models.CharField('Action', max_length=200)
+    description = models.TextField('Description / preuve', blank=True)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Responsable')
+    priority = models.CharField('Priorité', max_length=10, choices=PRIORITIES, default='MEDIUM')
+    due_date = models.DateField('Échéance')
+    state = models.CharField('État', max_length=20, choices=STATES, default='OPEN')
+
+    @property
+    def overdue_days(self):
+        return max(0, (timezone.localdate() - self.due_date).days) if self.state != 'COMPLETED' else 0
+
+    @property
+    def owner_name(self):
+        return (self.owner.get_full_name() or self.owner.username) if self.owner else 'Non affectée'
+
+    @property
+    def owner_initial(self):
+        return self.owner_name[0].upper() if self.owner else '—'
+
+    def __str__(self):
+        return self.titre
+
+
+class Document(models.Model):
+    audit = models.ForeignKey(Audit, on_delete=models.CASCADE, related_name='documents', verbose_name='Mission')
+    titre = models.CharField('Titre', max_length=200)
+    file = models.FileField('Fichier', upload_to='audit_documents/%Y/%m/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titre

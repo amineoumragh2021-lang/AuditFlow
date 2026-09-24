@@ -2,77 +2,60 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - AuditFlow</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'audit/css/style.css' %}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#03121d">
+    <title>Connexion sécurisée | AuditFlow</title>
+    <link rel="stylesheet" href="{% static 'audit/css/login.css' %}">
+    <script src="{% static 'audit/js/login.js' %}" defer></script>
 </head>
-<body class="auth-bg min-h-screen text-slate-900">
-    <div class="absolute inset-0 grid-pattern opacity-50"></div>
-    <div class="relative grid min-h-screen place-items-center p-4 sm:p-8">
-        <div class="auth-card grid lg:grid-cols-[1.04fr_.96fr] fade-up">
-            <section class="relative hidden min-h-[670px] overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between">
-                <div class="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-blue-500/30 blur-3xl floaty"></div>
-                <div class="absolute bottom-16 left-12 h-52 w-52 rounded-full bg-cyan-400/20 blur-3xl floaty"></div>
-                <div class="relative z-10 flex items-center gap-4">
-                    <div class="brand-logo">AF</div>
-                    <div>
-                        <h1 class="text-2xl font-black tracking-tight">AuditFlow</h1>
-                        <p class="text-xs font-black uppercase tracking-[.22em] text-blue-200">Django + MySQL + Tailwind</p>
-                    </div>
-                </div>
-                <div class="relative z-10">
-                    <span class="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[.22em] text-blue-100">Projet PFA</span>
-                    <h2 class="mt-7 max-w-xl text-6xl font-black leading-[.92] tracking-[-.06em]">Plateforme moderne de gestion des audits industriels</h2>
-                    <p class="mt-6 max-w-xl text-lg leading-8 text-slate-300">Planification, checklists, rapports et suivi des audits avec une interface claire, professionnelle et responsive.</p>
-                    <div class="mt-9 grid grid-cols-3 gap-4">
-                        <div class="feature-pill"><span class="feature-dot"></span><div><strong class="block text-2xl text-white">180</strong><small>Checklist</small></div></div>
-                        <div class="feature-pill"><span class="feature-dot"></span><div><strong class="block text-2xl text-white">3</strong><small>Rôles</small></div></div>
-                        <div class="feature-pill"><span class="feature-dot"></span><div><strong class="block text-2xl text-white">4</strong><small>Types</small></div></div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="auth-panel">
-                <div class="mx-auto max-w-md">
-                    <div class="auth-logo mb-7">AF</div>
-                    <p class="eyebrow">Bienvenue</p>
-                    <h2 class="auth-title mt-2">Connexion</h2>
-                    <p class="muted mt-4">Connectez-vous à votre espace Responsable Audit, Auditeur ou Client.</p>
-
-                    {% if messages %}
-                        <div class="mt-5 space-y-2">
-                        {% for message in messages %}
-                            <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 font-bold text-red-700">{{ message }}</div>
-                        {% endfor %}
-                        </div>
-                    {% endif %}
-
-                    <form method="post" class="tw-form mt-8 space-y-5">
-                        {% csrf_token %}
-                        <div>
-                            <label>Email</label>
-                            <input type="email" name="email" placeholder="exemple@audit.com" required>
-                        </div>
-                        <div>
-                            <label>Mot de passe</label>
-                            <input type="password" name="password" placeholder="Votre mot de passe" required>
-                        </div>
-                        <button type="submit" class="btn-primary w-full">Se connecter</button>
-                    </form>
-
-                    <div class="mt-6 rounded-[22px] border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-600">
-                        Nouveau compte ? <a href="{% url 'register' %}" class="font-black text-blue-700">Créer un compte</a>
-                    </div>
-                    <div class="mt-5 rounded-[22px] border border-blue-100 bg-blue-50/70 p-5 text-sm leading-7 text-slate-600">
-                        <strong class="block text-slate-950">Comptes de test</strong>
-                        responsable@audit.com / 123456<br>auditeur@audit.com / 123456<br>client@audit.com / 123456
-                    </div>
-                </div>
-            </section>
-        </div>
-    </div>
-    <script src="{% static 'audit/js/app.js' %}"></script>
+<body class="portal-page">
+<a class="skip-link" href="#connexion">Aller à la connexion</a>
+<aside class="portal-rail" aria-label="Navigation principale">
+    <a class="portal-brand" href="{% url 'login' %}" aria-label="AuditFlow, accueil"><span>AF</span><strong>AuditFlow</strong></a>
+    <nav>
+        <a href="{% url 'login' %}" class="active" aria-current="page">{% include 'audit/icon.html' with name='home' %}<span>Accueil</span></a>
+        <a href="{% url 'audits_list' %}">{% include 'audit/icon.html' with name='file' %}<span>Audits</span></a>
+        <a href="{% url 'governance_list' 'findings' %}">{% include 'audit/icon.html' with name='shield' %}<span>Conformité</span></a>
+        <a href="{% url 'governance_list' 'risks' %}">{% include 'audit/portal_icon.html' with name='chart' %}<span>Risques</span></a>
+        <a href="{% url 'checklist_list' %}">{% include 'audit/icon.html' with name='check' %}<span>Checklists</span></a>
+        <a href="{% url 'workspace_settings' %}">{% include 'audit/icon.html' with name='settings' %}<span>Paramètres</span></a>
+    </nav>
+    <p class="rail-signature">Audits<br>plus sûrs<br>Entreprises<br>plus fortes</p>
+</aside>
+<div class="portal-workspace">
+    <header class="portal-header"><a href="{% url 'login' %}" class="header-wordmark">AUDITFLOW</a><span class="header-caption">Plateforme de gouvernance des audits</span><div class="header-assurance"><span class="system-status"><i></i>Portail disponible</span><span class="standards">{% include 'audit/icon.html' with name='shield' %}<span>Référentiels ISO 9001 <b>•</b> ISO 27001</span></span></div></header>
+    <main class="portal-main">
+        <section class="portal-showcase" aria-labelledby="welcome-title">
+            <div class="hero-copy"><p class="portal-eyebrow">Conformité <b>•</b> Risques <b>•</b> Performance</p><h1 id="welcome-title">La maîtrise<br>de vos audits<br><span>commence ici.</span></h1><p class="hero-description">Planifiez, exécutez, suivez et clôturez vos audits industriels dans un environnement unique,<br class="desktop-break"> clair et sécurisé.</p></div>
+            <div class="preview-scene" aria-label="Illustration du pilotage des audits, données de démonstration">
+                <img class="industrial-scene" src="{% static 'audit/img/industrial-grid.svg' %}" alt="" width="900" height="600">
+                <div class="hologram compliance-hologram"><h2>Conformité globale</h2><div class="compliance-preview"><div class="portal-donut"><div><strong>92%</strong><small>Conforme</small></div></div><ul><li><i></i>Conforme <b>92%</b></li><li><i></i>En cours <b>6%</b></li><li><i></i>Non conforme <b>2%</b></li></ul></div></div>
+                <div class="hologram matrix-hologram"><h2>Matrice des risques</h2><div class="matrix-plot"><span class="matrix-y">Probabilité →</span><div class="matrix-labels"><span>Très élevé</span><span>Élevé</span><span>Modéré</span><span>Faible</span></div><div class="risk-heatmap" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="matrix-x">Impact →</span></div></div>
+                <div class="risk-callout"><i></i><div><strong>Risque élevé</strong><small>Plan d’action requis</small></div></div>
+                <div class="hologram audits-hologram"><h2>Audits en cours</h2><div class="preview-audit">{% include 'audit/icon.html' with name='file' %}<div><strong>Audit Sécurité</strong><small>Site Lyon</small></div><span class="preview-track"><i style="width:75%"></i></span><b>75%</b></div><div class="preview-audit">{% include 'audit/icon.html' with name='shield' %}<div><strong>Audit Qualité</strong><small>Site Marseille</small></div><span class="preview-track blue"><i style="width:60%"></i></span><b>60%</b></div><div class="preview-audit">{% include 'audit/portal_icon.html' with name='leaf' %}<div><strong>Audit Environnement</strong><small>Site Toulouse</small></div><span class="preview-track gold"><i style="width:30%"></i></span><b>30%</b></div></div>
+                <span class="site-tag production"><i></i>Production</span><span class="site-tag security"><i></i>Sécurité</span><span class="site-tag quality"><i></i>Qualité</span><span class="site-tag environment"><i></i>Environnement</span>
+                <div class="cycle-hologram"><h2>Cycle d’audit</h2><div class="portal-cycle"><div class="current"><span>{% include 'audit/icon.html' with name='file' %}</span><small>Planification</small></div><div><span>{% include 'audit/portal_icon.html' with name='play' %}</span><small>Exécution</small></div><div><span>{% include 'audit/portal_icon.html' with name='chart' %}</span><small>Revue</small></div><div><span>{% include 'audit/icon.html' with name='check' %}</span><small>Clôture</small></div></div></div>
+            </div>
+            <div class="portal-statistics" aria-label="Exemples d’indicateurs"><div>{% include 'audit/icon.html' with name='file' %}<p><strong>180</strong><span>Audits réalisés</span></p><small>↑ +12%</small></div><div>{% include 'audit/icon.html' with name='users' %}<p><strong>12</strong><span>Sites industriels</span></p><small>↑ +2</small></div><div>{% include 'audit/icon.html' with name='shield' %}<p><strong>98%</strong><span>Taux de conformité</span></p><small>↑ +4%</small></div><div>{% include 'audit/portal_icon.html' with name='chart' %}<p><strong>24</strong><span>Plans d’action</span></p><small>↓ −18%</small></div></div>
+            <p class="demo-caption">Aperçu illustratif · Données de démonstration</p>
+        </section>
+        <section class="portal-login" id="connexion" aria-labelledby="login-title">
+            <div class="login-kicker"><span>{% include 'audit/portal_icon.html' with name='lock' %}</span><p>Portail AuditFlow</p></div>
+            <h2 id="login-title">Connexion sécurisée</h2>
+            {% if messages %}<div class="login-messages" role="alert">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+            <form method="post" class="portal-form">
+                {% csrf_token %}
+                <div class="portal-field"><label for="login-email">Adresse e-mail</label><div class="portal-input">{% include 'audit/portal_icon.html' with name='mail' %}<input id="login-email" type="email" name="email" autocomplete="username" inputmode="email" value="{{ request.POST.email }}" required autofocus></div></div>
+                <div class="portal-field"><label for="login-password">Mot de passe</label><div class="portal-input">{% include 'audit/portal_icon.html' with name='lock' %}<input id="login-password" type="password" name="password" autocomplete="current-password" required><button type="button" class="password-toggle" aria-label="Afficher le mot de passe" aria-pressed="false" aria-controls="login-password" hidden>{% include 'audit/portal_icon.html' with name='eye' %}</button></div></div>
+                <div class="login-options"><label class="remember-me"><input type="checkbox" name="remember_me" value="1" {% if request.POST.remember_me %}checked{% endif %}><span>Se souvenir de moi</span></label><details class="password-help"><summary>Mot de passe oublié ?</summary><p>Contactez le responsable AuditFlow de votre organisation pour réinitialiser votre mot de passe.</p></details></div>
+                <button class="portal-submit" type="submit"><span>Accéder à mon espace</span><span aria-hidden="true">→</span></button>
+            </form>
+            <div class="login-assurance">{% include 'audit/icon.html' with name='shield' %}<span>Accès protégé <b>•</b> Données confidentielles</span></div>
+            <p class="register-link">Vous êtes nouveau ? <a href="{% url 'register' %}">Créer un compte client</a></p>
+        </section>
+    </main>
+    <footer class="portal-footer"><span>© {% now 'Y' %} AuditFlow</span><span>Gouvernance. Confiance. Performance.</span></footer>
+</div>
 </body>
 </html>

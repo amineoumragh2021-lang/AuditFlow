@@ -1,0 +1,5 @@
+# Optional local tools; these are not needed by the Vercel function.
+-r requirements.txt
+python-pptx>=1.0,<2
+PyMySQL>=1.1,<2
+gunicorn>=23,<24; sys_platform != "win32"

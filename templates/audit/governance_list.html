@@ -1,0 +1,16 @@
+{% extends 'audit/base.html' %}
+{% block title %}{{ title }} | AuditFlow{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="toolbar"><div><span class="section-label">Espace de gouvernance</span><h2>{{ title }}</h2><p>Suivi des éléments de vos missions d’audit.</p></div>{% if can_edit %}<a class="btn-primary" href="{% url 'governance_create' kind %}">＋ Ajouter</a>{% endif %}</div>
+<form method="get" class="workspace-filters"><label>Rechercher<input name="q" value="{{ request.GET.q }}" placeholder="Titre…"></label>{% if kind == 'actions' %}<label>État<select name="state"><option value="">Tous les états</option>{% for code,label in action_states %}<option value="{{ code }}" {% if request.GET.state == code %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label><label class="checkbox-label"><input type="checkbox" name="overdue" value="1" {% if request.GET.overdue %}checked{% endif %}> En retard uniquement</label>{% endif %}<button class="btn-secondary">Filtrer</button></form>
+<div class="command-panel table-scroll"><table class="command-table workspace-table"><thead><tr><th>Élément</th><th>Mission / organisation</th><th>Indicateurs</th><th>Actions</th></tr></thead><tbody>
+{% for record in records %}<tr><td><strong>{{ record }}</strong>{% if record.description %}<p>{{ record.description|linebreaksbr }}</p>{% endif %}</td><td>{% if record.audit %}<a href="{% url 'audit_detail' record.audit.pk %}">{{ record.audit }}</a>{% else %}{{ record.organisation|default:'—' }}{% endif %}</td><td>
+{% if kind == 'findings' %}<span class="priority {{ record.priority }}">{{ record.get_priority_display }}</span> · {% if record.resolved %}Résolu{% else %}Ouvert{% endif %}
+{% elif kind == 'risks' %}<span class="priority {{ record.priority }}">{{ record.get_priority_display }}</span><p>Impact {{ record.impact }}/5 · Probabilité {{ record.likelihood }}/5</p>
+{% elif kind == 'actions' %}<span class="priority {{ record.priority }}">{{ record.get_priority_display }}</span><p>{{ record.get_state_display }} · {{ record.due_date|date:'d/m/Y' }}</p><p>{{ record.owner_name }}</p>{% if record.overdue_days %}<span class="status-pill red">{{ record.overdue_days }} jours de retard</span>{% endif %}
+{% elif kind == 'documents' %}{{ record.created_at|date:'d/m/Y' }}{% else %}—{% endif %}
+</td><td>{% if kind == 'documents' %}<a class="btn-small" href="{% url 'download_document' record.pk %}">Télécharger</a>{% endif %}{% if can_edit %}<a class="btn-small" href="{% url 'governance_edit' kind record.pk %}">Modifier</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="4" class="command-empty">Aucun élément enregistré pour cette sélection.{% if can_edit %}<a href="{% url 'governance_create' kind %}">Ajouter le premier élément →</a>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}
