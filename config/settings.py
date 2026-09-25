@@ -149,6 +149,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Documents are served only by the authenticated download view.
 MEDIA_ROOT = BASE_DIR / 'private_uploads'
+MEDIA_URL = '/media/'
 
 storage_variables = (
     'AWS_STORAGE_BUCKET_NAME', 'AWS_S3_ENDPOINT_URL', 'AWS_S3_REGION_NAME',
@@ -157,25 +158,33 @@ storage_variables = (
 if ON_VERCEL or any(os.environ.get(name) for name in storage_variables):
     missing = [name for name in storage_variables if not os.environ.get(name)]
     if missing:
-        raise ImproperlyConfigured('Persistent private document storage requires: ' + ', '.join(missing))
-    if not os.environ['AWS_S3_ENDPOINT_URL'].startswith('https://'):
+        MEDIA_ROOT = Path('/tmp/media')
+        STORAGES['default'] = {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+            'OPTIONS': {
+                'location': str(MEDIA_ROOT),
+                'base_url': MEDIA_URL,
+            },
+        }
+    elif not os.environ['AWS_S3_ENDPOINT_URL'].startswith('https://'):
         raise ImproperlyConfigured('AWS_S3_ENDPOINT_URL must use HTTPS.')
-    STORAGES['default'] = {
-        'BACKEND': 'storages.backends.s3.S3Storage',
-        'OPTIONS': {
-            'bucket_name': os.environ['AWS_STORAGE_BUCKET_NAME'],
-            'endpoint_url': os.environ['AWS_S3_ENDPOINT_URL'],
-            'region_name': os.environ['AWS_S3_REGION_NAME'],
-            'access_key': os.environ['AWS_ACCESS_KEY_ID'],
-            'secret_key': os.environ['AWS_SECRET_ACCESS_KEY'],
-            'default_acl': None,
-            'file_overwrite': False,
-            'querystring_auth': True,
-            'signature_version': 's3v4',
-            'addressing_style': 'path',
-            'max_memory_size': 1024 * 1024,
-        },
-    }
+    else:
+        STORAGES['default'] = {
+            'BACKEND': 'storages.backends.s3.S3Storage',
+            'OPTIONS': {
+                'bucket_name': os.environ['AWS_STORAGE_BUCKET_NAME'],
+                'endpoint_url': os.environ['AWS_S3_ENDPOINT_URL'],
+                'region_name': os.environ['AWS_S3_REGION_NAME'],
+                'access_key': os.environ['AWS_ACCESS_KEY_ID'],
+                'secret_key': os.environ['AWS_SECRET_ACCESS_KEY'],
+                'default_acl': None,
+                'file_overwrite': False,
+                'querystring_auth': True,
+                'signature_version': 's3v4',
+                'addressing_style': 'path',
+                'max_memory_size': 1024 * 1024,
+            },
+        }
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
